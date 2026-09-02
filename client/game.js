@@ -222,6 +222,9 @@ let dashCdUntil = 0;
 let dashDir = { x: 0, y: 0 };
 let lastDashTrail = 0;
 let lastDashPct = -1;
+let fps = 0;
+let fpsFrames = 0;
+let fpsLast = 0;
 
 let selMap = 0;
 let selDur = 300;
@@ -1341,6 +1344,14 @@ function updateFx(dt) {
 
 function frame(now) {
   if (!running) return;
+  fpsFrames++;
+  if (now - fpsLast >= 500) {
+    fps = Math.round(fpsFrames * 1000 / (now - fpsLast));
+    fpsFrames = 0;
+    fpsLast = now;
+    const fe = $("fpsText");
+    if (fe) fe.textContent = fps;
+  }
   if (paused) {
     const dt = Math.min(0.05, (now - lastFrame) / 1000);
     lastFrame = now;

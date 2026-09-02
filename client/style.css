@@ -187,6 +187,18 @@ input::placeholder { color: var(--faint); }
 }
 .nav-btn.active .ic { color: var(--accent); }
 
+.lobby-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 8px 2px;
+  font-size: 11px;
+  color: var(--faint);
+}
+.foot-links { display: flex; gap: 18px; }
+.foot-links span { color: var(--muted); cursor: pointer; }
+.foot-links span:hover { color: var(--text); }
+
 .panel {
   flex: 1;
   min-width: 0;
@@ -482,6 +494,14 @@ input::placeholder { color: var(--faint); }
   overflow: hidden;
 }
 .dash-bar i { display: block; height: 100%; width: 100%; background: #a855f7; transition: width 0.1s; }
+.keys-hint {
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.keys-hint b { color: var(--text); font-weight: 800; }
 #hpText { font-weight: 900; font-size: 15px; }
 
 .ammo-wrap {

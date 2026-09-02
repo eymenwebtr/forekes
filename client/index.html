@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Forekes</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161b'/%3E%3Crect x='19' y='19' width='8' height='8' rx='2' fill='%23facc15'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -127,6 +127,10 @@
           </section>
         </main>
       </div>
+      <footer class="lobby-foot">
+        <span>© 2026 Forekes</span>
+        <span class="foot-links"><span>Gizlilik</span><span>Telif Hakkı</span></span>
+      </footer>
     </div>
   </div>
 
@@ -155,6 +159,7 @@
       <div class="hud-group">
         <div class="chip chip-room" id="roomChip" title="Oda kodunu kopyala">ODA <b id="roomText"></b></div>
         <div class="chip chip-dim" id="pingChip">PING <b id="pingText">--</b></div>
+        <div class="chip chip-dim" id="fpsChip">FPS <b id="fpsText">--</b></div>
         <div class="chip chip-dim">ESC <b>MENÜ</b></div>
       </div>
       <div class="chip"><b id="killText">0</b>&nbsp;KILL</div>
@@ -170,6 +175,7 @@
           <div class="hp-bar"><i id="hpFill"></i></div>
           <div class="sp-bar" title="Sprint"><i id="spFill"></i></div>
           <div class="dash-bar" title="Dash (Q)"><i id="dashFill"></i></div>
+          <div class="keys-hint"><b>Q</b> Dash &nbsp;·&nbsp; <b>Shift</b> Koş</div>
         </div>
         <span id="hpText">100</span>
       </div>
@@ -255,6 +261,6 @@
   <div id="toast" class="hidden"></div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="game.js?v=16"></script>
+  <script src="game.js?v=17"></script>
 </body>
 </html>
