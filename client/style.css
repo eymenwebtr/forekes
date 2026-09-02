@@ -123,10 +123,12 @@ input::placeholder { color: var(--faint); }
 
 /* ============ LOBI ============ */
 .shell {
-  width: 880px;
-  max-width: 94vw;
-  max-height: 94vh;
+  width: 940px;
+  max-width: 96vw;
+  max-height: 96vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .top {
@@ -134,7 +136,7 @@ input::placeholder { color: var(--faint); }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 4px 18px;
+  padding: 4px 6px 20px;
 }
 .logo {
   font-size: 30px;
@@ -151,6 +153,8 @@ input::placeholder { color: var(--faint); }
   display: flex;
   gap: 14px;
   align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 .nav {
@@ -186,10 +190,12 @@ input::placeholder { color: var(--faint); }
 .panel {
   flex: 1;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 26px 28px;
+  padding: 28px 32px;
 }
 .panel h2 { margin: 0 0 6px; font-size: 21px; letter-spacing: 0.5px; }
 .panel h3 {
@@ -204,9 +210,11 @@ input::placeholder { color: var(--faint); }
 .tab.active { display: block; }
 
 /* --- Oyna sekmesi --- */
-.play-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 30px; }
-.play-left .btn-big { margin-bottom: 10px; }
-.join { display: flex; gap: 8px; margin-top: 14px; }
+.play-grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 34px; }
+.play-left .btn-big { margin-bottom: 12px; }
+.play-left h2 { margin-bottom: 8px; }
+.play-left .muted { margin-bottom: 20px; }
+.join { display: flex; gap: 8px; margin-top: 16px; }
 .join input {
   flex: 1;
   text-transform: uppercase;
@@ -218,20 +226,22 @@ input::placeholder { color: var(--faint); }
 
 #mapPrev {
   width: 100%;
+  height: auto;
+  aspect-ratio: 2200 / 1300;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: #101216;
   display: block;
 }
-.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .controls div {
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 9px 12px;
+  padding: 11px 14px;
 }
 .controls b { display: block; font-size: 13px; }
-.controls span { display: block; color: var(--faint); font-size: 11px; margin-top: 2px; }
+.controls span { display: block; color: var(--faint); font-size: 11px; margin-top: 3px; }
 
 /* --- Skinler --- */
 .skin-grid {
@@ -575,33 +585,35 @@ input::placeholder { color: var(--faint); }
 
 /* ============ MAC AYARLARI ============ */
 .match-settings {
-  margin-top: 18px;
-  padding: 14px;
+  margin-top: 20px;
+  padding: 16px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--panel-2);
 }
-.opt-group { margin-bottom: 12px; }
-.opt-group:last-of-type { margin-bottom: 8px; }
+.opt-group { margin-bottom: 14px; }
+.opt-group:last-of-type { margin-bottom: 10px; }
 .opt-label {
   display: block;
   font-size: 10px;
   color: var(--faint);
   letter-spacing: 2px;
   font-weight: 800;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
-.opt-row { display: flex; gap: 6px; }
+.opt-row { display: flex; flex-wrap: wrap; gap: 7px; }
 .opt-btn {
-  flex: 1;
-  height: 34px;
+  flex: 1 1 70px;
+  height: 36px;
+  padding: 0 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--panel-3);
   color: var(--muted);
   font-weight: 700;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 1px;
+  white-space: nowrap;
   transition: border-color 0.12s, color 0.12s, background 0.12s;
 }
 .opt-btn:hover { background: #292e38; color: var(--text); }
