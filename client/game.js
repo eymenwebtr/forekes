@@ -150,6 +150,7 @@ let regenFlash = null;
 let selMap = 0;
 let selDur = 300;
 let selLimit = 20;
+let pendingMap = 0;
 let matchEndsAt = 0;
 let killLimit = 0;
 let isParty = false;
@@ -525,7 +526,8 @@ socket.on("started", data => {
   matchEnded = false;
   isParty = !!data.party;
   killLimit = data.killLimit || 0;
-  setMap(data.map !== undefined ? data.map : 0);
+  pendingMap = data.map !== undefined ? data.map : 0;
+  setMap(pendingMap);
   matchEndsAt = data.durationMs ? Date.now() + data.durationMs : 0;
   lastTimerSec = -1;
 
@@ -872,13 +874,13 @@ function updateWeaponBar() {
 socket.on("maps", data => {
   mapsCatalog = data.maps;
   worldDims = data.world;
-  if (!mapData) setMap(0);
+  setMap(pendingMap);
   buildSettings();
 });
 
 function setMap(idx) {
-  if (!mapsCatalog) return;
-  const m = mapsCatalog[idx] || mapsCatalog[0];
+  const catalog = mapsCatalog || STATIC_MAPS;
+  const m = catalog[idx] || catalog[0];
   mapData = {
     w: worldDims.w,
     h: worldDims.h,
@@ -920,6 +922,7 @@ function buildSettings() {
     b.textContent = m.name;
     b.onclick = () => {
       selMap = i;
+      pendingMap = i;
       saveLS("selMap", i);
       buildSettings();
       setMap(i);
@@ -1249,7 +1252,7 @@ function updateTimer(now) {
 // ---------------- cizim ----------------
 function draw(now) {
   const p = players[me];
-  if (!p) return;
+  if (!p || !mapData) return;
 
   const dpr = Math.min(devicePixelRatio || 1, 2);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1609,6 +1612,7 @@ function startLocal() {
   }
   lastLocalSettings = { map: selMap, dur: selDur, limit: selLimit };
   const identity = playerIdentity();
+  pendingMap = selMap;
   setMap(selMap);
   localGame = true;
   screen = "game";
@@ -2138,7 +2142,8 @@ renderFriends();
 
 if (STATIC) {
   mapsCatalog = STATIC_MAPS;
-  setMap(0);
+  pendingMap = selMap;
+  setMap(pendingMap);
   buildSettings();
 
   const note = document.createElement("p");
