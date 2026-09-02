@@ -233,7 +233,7 @@ function startedPayload(r) {
   return {
     code: r.code,
     map: r.map,
-    durationMs: r.durationSec * 1000,
+    durationMs: r.endsAt ? Math.max(0, r.endsAt - Date.now()) : 0,
     killLimit: r.killLimit,
     party: r.isParty
   };
@@ -390,13 +390,15 @@ io.on("connection", socket => {
 
     const code = genCode();
     rooms.set(code, newRoom(code, {
-      state: "waiting",
+      state: "playing",
       leader: socket.id,
       isParty: true,
       map,
       durationSec,
       killLimit
     }));
+    const r = rooms.get(code);
+    r.endsAt = r.durationSec > 0 ? Date.now() + r.durationSec * 1000 : 0;
     enterRoom(socket, code, name, skin);
   });
 

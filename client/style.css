@@ -390,6 +390,8 @@ input::placeholder { color: var(--faint); }
 .hud-top .chip b { color: var(--accent); margin-left: 5px; }
 .hud-top > .chip b { color: var(--text); margin: 0 5px 0 0; }
 .chip-dim b { color: var(--faint); }
+.chip-room { pointer-events: auto; cursor: pointer; }
+.chip-room:hover { border-color: var(--accent); }
 
 .hud-center {
   position: absolute;

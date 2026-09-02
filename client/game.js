@@ -720,6 +720,9 @@ socket.on("disconnect", () => {
   }
 });
 if (!STATIC) {
+  socket.on("connect", () => {
+    me = socket.id;
+  });
   socket.on("connect_error", () => {
     if (screen === "lobby") toast("Sunucuya bağlanılamadı. Birazdan tekrar deneniyor...");
   });
@@ -748,6 +751,16 @@ function sendChat() {
   inp.value = "";
   closeChat();
 }
+function copyRoomCode() {
+  if (!room || localGame) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(room).then(() => toast("Oda kodu kopyalandı: " + room));
+  } else {
+    toast("Oda kodu: " + room);
+  }
+}
+$("roomChip").onclick = copyRoomCode;
+
 function addChatMsg(name, text, mine) {
   const log = $("chatLog");
   const d = document.createElement("div");
@@ -800,14 +813,11 @@ function showResults(rankings, reason, mode) {
   $("results").classList.remove("hidden");
 
   if (mode === "mp") {
+    $("resultsAgain").style.display = isParty ? "none" : "";
     $("resultsOk").onclick = () => {
       $("results").classList.add("hidden");
-      if (isParty && lastPartyInfo) {
-        renderParty(lastPartyInfo);
-      } else {
-        socket.emit("leave");
-        backToLobby();
-      }
+      socket.emit("leave");
+      backToLobby();
     };
     $("resultsAgain").onclick = () => {
       $("results").classList.add("hidden");
