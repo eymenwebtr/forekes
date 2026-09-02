@@ -854,8 +854,8 @@ input::placeholder { color: var(--faint); }
 .sb-card .you { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
 
 /* ============ AYRILMA UYARISI ============ */
-.settings-actions { display: flex; gap: 8px; margin-top: 10px; }
-.settings-actions .btn { flex: 1; height: 40px; font-size: 12px; }
+.settings-actions { display: flex; gap: 10px; margin: 14px 0; }
+.settings-actions .btn { flex: 1; height: 42px; font-size: 12px; }
 
 /* ============ DURAKLATMA MENUSU ============ */
 .overlay-pause {
@@ -901,9 +901,9 @@ input::placeholder { color: var(--faint); }
   color: var(--accent);
   background: var(--panel-3);
 }
-#diffBox { margin-bottom: 20px; }
-#gfxBox { margin-bottom: 16px; }
+#diffBox { margin-bottom: 16px; }
+#gfxBox { margin-bottom: 12px; }
 #gfxBox .pause-h { margin: 0 0 10px; }
 #diffBox .hint { margin: 8px 0 0; }
-.pause-card .btn-big { margin-bottom: 9px; }
+.pause-card .btn-big { margin-bottom: 10px; }
 .pause-card .btn-big:last-child { margin-bottom: 0; }
