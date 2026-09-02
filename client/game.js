@@ -1,5 +1,5 @@
 const STATIC = typeof io === "undefined";
-const socket = STATIC ? { id: "offline", connected: false, on() {}, emit() {} } : io();
+const socket = STATIC ? { id: "offline", connected: false, on() {}, emit() {} } : io({ transports: ["websocket"] });
 
 const STATIC_MAPS = [
   {
@@ -719,6 +719,11 @@ socket.on("disconnect", () => {
     toast("Sunucu bağlantısı koptu.");
   }
 });
+if (!STATIC) {
+  socket.on("connect_error", () => {
+    if (screen === "lobby") toast("Sunucuya bağlanılamadı. Birazdan tekrar deneniyor...");
+  });
+}
 
 // ---------------- sohbet ----------------
 function openChat() {
