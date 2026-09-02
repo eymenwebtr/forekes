@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Forekes</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161b'/%3E%3Crect x='19' y='19' width='8' height='8' rx='2' fill='%23facc15'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- ============ LOBI ============ -->
+  <div id="lobby" class="overlay">
+    <div class="shell">
+      <header class="top">
+        <div class="logo">FOREKES<span class="logo-dot"></span></div>
+        <div class="top-right">
+          <div class="chip chip-accent" title="Kupa">
+            <svg viewBox="0 0 24 24" class="ic"><path d="M6 3h12v2h3v3a5 5 0 0 1-5 5 6 6 0 0 1-3 2.6V18h3v3H8v-3h3v-2.4A6 6 0 0 1 8 13a5 5 0 0 1-5-5V5h3V3zm-1 4v1a3 3 0 0 0 2 2.8V7H5zm14 0h-2v3.8A3 3 0 0 0 19 8V7z"/></svg>
+            <b id="cupsValue">0</b>
+          </div>
+          <input id="name" maxlength="16" placeholder="Oyuncu adın" spellcheck="false" autocomplete="off">
+        </div>
+      </header>
+
+      <div class="body-wrap">
+        <nav class="nav">
+          <button class="nav-btn active" data-tab="play">
+            <svg viewBox="0 0 24 24" class="ic"><path d="M8 5v14l11-7z"/></svg>Oyna
+          </button>
+          <button class="nav-btn" data-tab="skins">
+            <svg viewBox="0 0 24 24" class="ic"><path d="M16.5 3l-1.6 1.2a5 5 0 0 1-5.8 0L7.5 3 3 6l1.8 3.5L7 8.8V21h10V8.8l2.2.7L21 6l-4.5-3z"/></svg>Skinler
+          </button>
+          <button class="nav-btn" data-tab="cups">
+            <svg viewBox="0 0 24 24" class="ic"><path d="M6 3h12v2h3v3a5 5 0 0 1-5 5 6 6 0 0 1-3 2.6V18h3v3H8v-3h3v-2.4A6 6 0 0 1 8 13a5 5 0 0 1-5-5V5h3V3zm-1 4v1a3 3 0 0 0 2 2.8V7H5zm14 0h-2v3.8A3 3 0 0 0 19 8V7z"/></svg>Kupa
+          </button>
+          <button class="nav-btn" data-tab="friends">
+            <svg viewBox="0 0 24 24" class="ic"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-7 1.7-7 4v3h14v-3c0-2.3-3.7-4-7-4zm8-2a3 3 0 1 0-2-5.2 6 6 0 0 1-.5 5.2H17z"/></svg>Arkadaşlar
+          </button>
+        </nav>
+
+        <main class="panel">
+          <!-- OYNA -->
+          <section id="tab-play" class="tab active">
+            <div class="play-grid">
+              <div class="play-left">
+                <h2>Savaşa gir</h2>
+                <p class="muted">8 oyuncuya kadar arena. Ele, kupa kazan, yüksel.</p>
+                <button id="quickBtn" class="btn btn-primary btn-big">
+                  <svg viewBox="0 0 24 24" class="ic"><path d="M8 5v14l11-7z"/></svg>
+                  HIZLI OYNA
+                </button>
+                <button id="singleBtn" class="btn btn-ghost btn-big">
+                  <svg viewBox="0 0 24 24" class="ic"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                  TEK OYUNCU
+                </button>
+                <button id="createBtn" class="btn btn-ghost btn-big">
+                  <svg viewBox="0 0 24 24" class="ic"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-7 1.7-7 4v3h14v-3c0-2.3-3.7-4-7-4zm8-2a3 3 0 1 0-2-5.2 6 6 0 0 1-.5 5.2H17z"/></svg>
+                  PARTİ OLUŞTUR
+                </button>
+                <div class="join">
+                  <input id="roomInput" maxlength="6" placeholder="ODA KODU" spellcheck="false" autocomplete="off">
+                  <button id="joinBtn" class="btn">KATIL</button>
+                </div>
+
+                <div class="match-settings">
+                  <div class="opt-group">
+                    <span class="opt-label">HARİTA</span>
+                    <div class="opt-row" id="optMap"></div>
+                  </div>
+                  <div class="opt-group">
+                    <span class="opt-label">SÜRE</span>
+                    <div class="opt-row" id="optDur"></div>
+                  </div>
+                  <div class="opt-group">
+                    <span class="opt-label">SKOR HEDEFİ</span>
+                    <div class="opt-row" id="optLimit"></div>
+                  </div>
+                  <p class="hint">Tek Oyuncu ve Parti Oluştur bu ayarları kullanır. Hızlı Oyna rastgele harita + 5dk kullanır.</p>
+                </div>
+              </div>
+              <div class="play-right">
+                <h3>Harita</h3>
+                <canvas id="mapPrev" width="264" height="156"></canvas>
+                <h3>Kontroller</h3>
+                <div class="controls">
+                  <div><b>W A S D</b><span>Hareket</span></div>
+                  <div><b>Mouse</b><span>Nişan</span></div>
+                  <div><b>Sol tık</b><span>Ateş</span></div>
+                  <div><b>1 2 3</b><span>Silah değiştir</span></div>
+                  <div><b>R</b><span>Şarjör</span></div>
+                  <div><b>Shift</b><span>Koş (dayanıklılık)</span></div>
+                  <div><b>Tekerlek</b><span>Silah çevir</span></div>
+                  <div><b>ESC</b><span>Çıkış</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SKINLER -->
+          <section id="tab-skins" class="tab">
+            <h2>Skinler</h2>
+            <p class="muted">Kupa kazandıkça yeni skinler açılır. Kupa kazanmak için ele; ölmek kupa kaybettirir.</p>
+            <div id="skinGrid" class="skin-grid"></div>
+          </section>
+
+          <!-- KUPA -->
+          <section id="tab-cups" class="tab">
+            <div class="board-head">
+              <h2>Kupa Sıralaması</h2>
+              <button id="boardRefresh" class="btn btn-small">YENİLE</button>
+            </div>
+            <ol id="board" class="board"></ol>
+          </section>
+
+          <!-- ARKADASLAR -->
+          <section id="tab-friends" class="tab">
+            <h2>Arkadaşlar</h2>
+            <div class="friend-add">
+              <input id="friendInput" maxlength="16" placeholder="Arkadaşının adı" spellcheck="false" autocomplete="off">
+              <button id="friendAdd" class="btn">EKLE</button>
+            </div>
+            <ul id="friendList" class="friends"></ul>
+            <p class="hint">Arkadaşların oyuna girince burada çevrimiçi görünür; bir odadaysalar tek tuşla yanlarına katılabilirsin.</p>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PARTI EKRANI ============ -->
+  <div id="party" class="overlay hidden">
+    <div class="party-card">
+      <h2>PARTİ</h2>
+      <p class="muted">Kodu paylaş, arkadaşlarını davet et</p>
+      <button id="copyCode" class="code" title="Kopyalamak için tıkla">
+        <span id="partyCode">------</span>
+        <small>KOPYALA</small>
+      </button>
+      <p id="partySettings" class="hint"></p>
+      <div id="partyPlayers" class="party-players"></div>
+      <div class="party-actions">
+        <button id="startMatch" class="btn btn-primary">MAÇI BAŞLAT</button>
+        <button id="leaveParty" class="btn btn-ghost">AYRIL</button>
+      </div>
+      <p id="partyNote" class="hint"></p>
+    </div>
+  </div>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="hud-group">
+        <div class="chip">ODA <b id="roomText"></b></div>
+        <div class="chip chip-dim" id="pingChip">PING <b id="pingText">--</b></div>
+        <div class="chip chip-dim">ESC <b>MENÜ</b></div>
+      </div>
+      <div class="chip"><b id="killText">0</b>&nbsp;KILL</div>
+    </div>
+    <div class="hud-center">
+      <div class="chip chip-timer hidden" id="timerChip"><b id="timerText">05:00</b></div>
+      <div class="chip chip-dim hidden" id="limitChip"><b id="limitText">0 / 20</b></div>
+    </div>
+    <div id="killfeed"></div>
+    <div class="hud-bottom">
+      <div class="hp-wrap">
+        <div class="bars">
+          <div class="hp-bar"><i id="hpFill"></i></div>
+          <div class="sp-bar" title="Sprint"><i id="spFill"></i></div>
+        </div>
+        <span id="hpText">100</span>
+      </div>
+      <div class="ammo-wrap">
+        <div id="weaponBar">
+          <div class="wslot"><span class="wkey">1</span><span class="wname">TABANCA</span><i class="wcd"></i></div>
+          <div class="wslot"><span class="wkey">2</span><span class="wname">POMPALI</span><i class="wcd"></i></div>
+          <div class="wslot"><span class="wkey">3</span><span class="wname">BAZUKA</span><i class="wcd"></i></div>
+        </div>
+        <div class="swap-bar" id="swapBar"><i id="swapFill"></i></div>
+        <div id="ammoPips"></div>
+        <div class="reload-bar"><i id="reloadFill"></i></div>
+        <span id="reloadText"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="vignette"></div>
+
+  <!-- ============ SOHBET ============ -->
+  <button id="chatTab" class="hidden">SOHBET</button>
+  <div id="chatWrap" class="hidden">
+    <div id="chatLog"></div>
+    <div id="chatEmojis"></div>
+    <div class="chat-row">
+      <input id="chatInput" maxlength="80" placeholder="Mesaj yaz... (Enter)" autocomplete="off" spellcheck="false">
+      <button id="chatSend" class="btn">GÖNDER</button>
+    </div>
+  </div>
+
+  <!-- ============ DURAKLATMA MENUSU ============ -->
+  <div id="pause" class="overlay overlay-pause hidden">
+    <div class="pause-card">
+      <h2 id="pauseTitle">MENÜ</h2>
+      <p id="pauseSub" class="muted"></p>
+
+      <div class="vol-row">
+        <span class="pause-h">SES</span>
+        <input type="range" id="volSlider" min="0" max="100" value="80">
+        <b id="volVal">%80</b>
+      </div>
+
+      <div id="diffBox">
+        <h3 class="pause-h">ZORLUK</h3>
+        <div class="diff-row">
+          <button class="diff-btn" data-d="0">KOLAY</button>
+          <button class="diff-btn" data-d="1">NORMAL</button>
+          <button class="diff-btn" data-d="2">ZOR</button>
+        </div>
+        <p class="hint" id="diffHint"></p>
+      </div>
+
+      <button id="resumeBtn" class="btn btn-primary btn-big">DEVAM ET</button>
+      <button id="quitBtn" class="btn btn-ghost btn-big">MAÇTAN AYRIL</button>
+    </div>
+  </div>
+
+  <div id="death" class="hidden">
+    <div class="death-card">
+      <h2>ELENDİN</h2>
+      <p id="killerText">Yeniden doğuyorsun...</p>
+    </div>
+  </div>
+
+  <!-- ============ MAC SONUCU ============ -->
+  <div id="results" class="overlay hidden">
+    <div class="pause-card">
+      <h2>MAÇ BİTTİ</h2>
+      <p id="resultsSub" class="muted"></p>
+      <ol id="resultsList" class="board"></ol>
+      <div class="party-actions">
+        <button id="resultsAgain" class="btn btn-primary">TEKRAR</button>
+        <button id="resultsOk" class="btn btn-ghost">TAMAM</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="game.js?v=6"></script>
+</body>
+</html>
