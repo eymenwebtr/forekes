@@ -898,8 +898,8 @@ input::placeholder { color: var(--faint); }
 .diff-btn:hover { background: var(--panel-3); color: var(--text); }
 .diff-btn.active {
   border-color: var(--accent);
-  color: var(--accent);
-  background: var(--panel-3);
+  color: var(--accent-ink);
+  background: var(--accent);
 }
 #diffBox { margin-bottom: 16px; }
 #gfxBox { margin-bottom: 12px; }

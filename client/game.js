@@ -1187,7 +1187,7 @@ function camScale() {
 }
 
 function spawnParticles(x, y, color, count, speed) {
-  count = Math.max(2, Math.round(count * [0.35, 0.7, 1.2][quality]));
+  count = Math.max(2, Math.round(count * [0.2, 0.7, 1.3][quality]));
   for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
     const v = speed * (0.4 + Math.random() * 0.8);
@@ -1483,7 +1483,7 @@ function draw(now) {
   drawParticles();
 
   const wdef = WEAPONS[ammo.weapon];
-  if (p.health > 0) {
+  if (quality > 0 && p.health > 0) {
     const col = wdef.id === 0 ? "232,237,242" : "250,204,21";
 
     ctx.beginPath();
@@ -1517,7 +1517,7 @@ function draw(now) {
     if (shake < 0.3) shake = 0;
   }
 
-  drawMinimap();
+  if (quality > 0) drawMinimap();
   drawCrosshair(now);
 }
 
@@ -1791,7 +1791,7 @@ function makeBot(name, sk, bw, prefDist, s, now) {
 }
 
 function updateDiffButtons() {
-  document.querySelectorAll(".diff-btn").forEach(btn => {
+  document.querySelectorAll(".diff-btn[data-d]").forEach(btn => {
     btn.classList.toggle("active", Number(btn.dataset.d) === diffIdx);
   });
 }
