@@ -246,6 +246,7 @@ function newRoom(code, opts) {
     endsAt: 0,
     players: new Map(),
     scores: {},
+    deaths: {},
     bullets: [],
     nextBullet: 1
   };
@@ -265,6 +266,8 @@ function publicPlayers(r) {
       angle: p.angle,
       health: p.health,
       ping: p.ping || 0,
+      kills: r.scores[p.id] || 0,
+      deaths: r.deaths[p.id] || 0,
       shield: p.shieldUntil > now
     };
   }
@@ -353,6 +356,9 @@ function enterRoom(socket, code, name, skin) {
     lastShot: 0,
     swapEnd: 0,
     ping: 0,
+    pendCups: 0,
+    pendKills: 0,
+    pendDeaths: 0,
     shieldUntil: 0
   };
 
@@ -385,8 +391,15 @@ function leaveRoom(socket) {
 
   if (!r) return;
 
+  const p = r.players.get(socket.id);
+  if (p && r.state === "playing" && !r.isParty) {
+    const s = statOf(p.name);
+    socket.emit("cupsYou", { cups: s.cups, matchCups: 0 });
+  }
+
   r.players.delete(socket.id);
   delete r.scores[socket.id];
+  delete r.deaths[socket.id];
 
   if (r.players.size === 0) {
     rooms.delete(code);
@@ -487,9 +500,13 @@ io.on("connection", socket => {
     r.state = "playing";
     r.endsAt = r.durationSec > 0 ? Date.now() + r.durationSec * 1000 : 0;
     r.scores = {};
+    r.deaths = {};
     const spawns = [...MAPS[r.map].spawns].sort(() => Math.random() - 0.5);
     let i = 0;
     for (const p of r.players.values()) {
+      p.pendCups = 0;
+      p.pendKills = 0;
+      p.pendDeaths = 0;
       spawnPlayer(p, r.map);
       p.x = spawns[i % spawns.length][0];
       p.y = spawns[i % spawns.length][1];
@@ -667,20 +684,22 @@ function applyDamage(code, r, target, dmg, shooterId, direct) {
   if (!selfKill && shooter) {
     r.scores[shooterId] = (r.scores[shooterId] || 0) + 1;
   }
+  r.deaths[target.id] = (r.deaths[target.id] || 0) + 1;
 
   if (!r.isParty) {
-    const vs = statOf(target.name);
-    vs.deaths++;
-    vs.cups = Math.max(0, vs.cups - 1);
-    io.to(target.id).emit("cupsYou", { cups: vs.cups, kills: vs.kills, deaths: vs.deaths });
+    if (shooter && !selfKill) {
+      shooter.pendKills = (shooter.pendKills || 0) + 1;
+      shooter.pendCups = (shooter.pendCups || 0) + 1;
+    }
+    target.pendDeaths = (target.pendDeaths || 0) + 1;
+    target.pendCups = Math.max(0, (target.pendCups || 0) - 1);
 
+    const vs = statOf(target.name);
+    io.to(target.id).emit("cupsYou", { cups: vs.cups + target.pendCups, matchCups: target.pendCups });
     if (shooter && !selfKill) {
       const ks = statOf(shooter.name);
-      ks.kills++;
-      ks.cups++;
-      io.to(shooter.id).emit("cupsYou", { cups: ks.cups, kills: ks.kills, deaths: ks.deaths });
+      io.to(shooter.id).emit("cupsYou", { cups: ks.cups + shooter.pendCups, matchCups: shooter.pendCups });
     }
-    persist();
   }
 
   io.to(code).emit("kill", { killer: shooter ? shooter.name : "??", victim: target.name });
@@ -728,11 +747,27 @@ function endMatch(code, r, reason) {
   r.bullets = [];
   r.endsAt = 0;
 
+  if (!r.isParty) {
+    for (const p of r.players.values()) {
+      if (p.pendKills || p.pendDeaths || p.pendCups) {
+        const s = statOf(p.name);
+        s.kills += p.pendKills || 0;
+        s.deaths += p.pendDeaths || 0;
+        s.cups = Math.max(0, s.cups + (p.pendCups || 0));
+        p.pendKills = 0;
+        p.pendDeaths = 0;
+        p.pendCups = 0;
+      }
+    }
+    persist();
+  }
+
   const rankings = [...r.players.values()]
     .map(p => ({ id: p.id, name: p.name, kills: r.scores[p.id] || 0 }))
     .sort((a, b) => b.kills - a.kills);
 
   r.scores = {};
+  r.deaths = {};
 
   io.to(code).emit("matchEnd", { rankings, reason });
   io.to(code).emit("scores", {});

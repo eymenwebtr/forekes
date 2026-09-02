@@ -225,6 +225,8 @@ let lastDashPct = -1;
 let fps = 0;
 let fpsFrames = 0;
 let fpsLast = 0;
+let matchCups = 0;
+let perfMode = false;
 
 let selMap = 0;
 let selDur = 300;
@@ -318,6 +320,10 @@ addEventListener("keydown", e => {
     e.preventDefault();
     startDash();
   }
+  if (e.code === "Tab" && running) {
+    e.preventDefault();
+    showScoreboard(true);
+  }
   if (e.key === "Escape" && running) togglePause();
   if (e.key === "Enter" && running && !paused && !localGame) {
     e.preventDefault();
@@ -366,6 +372,7 @@ function startDash() {
 }
 addEventListener("keyup", e => {
   keys[e.key.toLowerCase()] = false;
+  if (e.code === "Tab") showScoreboard(false);
 });
 addEventListener("blur", () => {
   keys = {};
@@ -655,6 +662,9 @@ socket.on("started", data => {
   setHp(100);
   $("killText").textContent = "0";
   $("killfeed").innerHTML = "";
+  matchCups = 0;
+  $("cupText").textContent = "0";
+  $("cupChip").classList.toggle("hidden", !!isParty);
   $("timerChip").classList.toggle("hidden", !matchEndsAt);
   $("limitChip").classList.toggle("hidden", !killLimit);
   $("limitText").textContent = "0 / " + killLimit;
@@ -672,6 +682,7 @@ function backToLobby() {
   chatOpen = false;
   matchEnded = false;
   matchEndsAt = 0;
+  matchCups = 0;
   players = {};
   bullets = [];
   particles = [];
@@ -683,6 +694,8 @@ function backToLobby() {
   $("death").classList.add("hidden");
   $("results").classList.add("hidden");
   $("countdown").classList.add("hidden");
+  $("scoreboard").classList.add("hidden");
+  $("leaveWarn").classList.add("hidden");
   $("chatWrap").classList.add("hidden");
   $("chatTab").classList.add("hidden");
   $("lobby").classList.remove("hidden");
@@ -774,8 +787,11 @@ function boomFx(x, y, r) {
 
 socket.on("cupsYou", data => {
   cups = data.cups;
+  matchCups = data.matchCups || 0;
   saveLS("cups", cups);
   $("cupsValue").textContent = cups;
+  const ct = $("cupText");
+  if (ct) ct.textContent = matchCups;
 });
 
 socket.on("damaged", data => {
@@ -791,6 +807,8 @@ socket.on("damaged", data => {
 socket.on("dead", data => {
   if (data.id !== me) return;
   setHp(0);
+  matchCups = Math.max(0, matchCups - 1);
+  $("cupText").textContent = matchCups;
   $("killerText").textContent = data.killer ? data.killer + " seni eledi" : "Yeniden doğuyorsun...";
   $("death").classList.remove("hidden");
   sfx(110, 0.3, "sawtooth", 0.2);
@@ -812,6 +830,8 @@ function addFeed(killerName, victimName, mine) {
 socket.on("kill", data => {
   addFeed(data.killer, data.victim, data.killer === myName);
   if (data.killer === myName) {
+    matchCups++;
+    $("cupText").textContent = matchCups;
     sfx(660, 0.07, "square", 0.15);
     setTimeout(() => sfx(880, 0.09, "square", 0.15), 80);
   }
@@ -1122,6 +1142,7 @@ function camScale() {
 }
 
 function spawnParticles(x, y, color, count, speed) {
+  if (perfMode) count = Math.max(2, Math.ceil(count * 0.4));
   for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
     const v = speed * (0.4 + Math.random() * 0.8);
@@ -1402,8 +1423,9 @@ function draw(now) {
   ctx.clearRect(0, 0, innerWidth, innerHeight);
 
   const scale = camScale();
-  const ox = innerWidth / 2 - p.x * scale + (Math.random() - 0.5) * shake;
-  const oy = innerHeight / 2 - p.y * scale + (Math.random() - 0.5) * shake;
+  const sh = perfMode ? 0 : shake;
+  const ox = innerWidth / 2 - p.x * scale + (Math.random() - 0.5) * sh;
+  const oy = innerHeight / 2 - p.y * scale + (Math.random() - 0.5) * sh;
 
   ctx.save();
   ctx.translate(ox, oy);
@@ -1705,6 +1727,7 @@ function makeBot(name, sk, bw, prefDist, s, now) {
     mag: WEAPONS[bw].mag,
     prefDist,
     kills: 0,
+    deaths: 0,
     x: s[0], y: s[1],
     angle: Math.random() * Math.PI * 2,
     health: 100,
@@ -1781,6 +1804,7 @@ function startLocal() {
     skin: identity.skin,
     weapon: 0,
     kills: 0,
+    deaths: 0,
     x: spawns[0][0], y: spawns[0][1],
     angle: 0, health: 100,
     reloadEnd: 0, lastShot: 0, swapEnd: 0,
@@ -1821,6 +1845,9 @@ function startLocal() {
   setHp(100);
   $("killText").textContent = "0";
   $("killfeed").innerHTML = "";
+  matchCups = 0;
+  $("cupText").textContent = "0";
+  $("cupChip").classList.add("hidden");
   $("timerChip").classList.toggle("hidden", !matchEndsAt);
   $("limitChip").classList.toggle("hidden", !killLimit);
   $("limitText").textContent = "0 / " + killLimit;
@@ -1863,8 +1890,45 @@ function togglePause(force) {
 function leaveMatch() {
   paused = false;
   $("pause").classList.add("hidden");
+  $("leaveWarn").classList.add("hidden");
+  $("scoreboard").classList.add("hidden");
   if (!localGame) socket.emit("leave");
   backToLobby();
+}
+
+function requestLeave() {
+  if (!localGame && !isParty && matchCups > 0) {
+    $("leaveWarnText").textContent = "Bu maçtan " + matchCups + " kupa kazanacaksın. Şimdi çıkarsan kupalar kaydedilmez.";
+    $("leaveWarn").classList.remove("hidden");
+    return;
+  }
+  leaveMatch();
+}
+
+function buildScoreboard() {
+  const body = $("sbBody");
+  body.innerHTML = "";
+  const list = Object.values(players).sort((a, b) => (b.kills || 0) - (a.kills || 0));
+  list.forEach((p, i) => {
+    const tr = document.createElement("tr");
+    if (p.id === me) tr.className = "me";
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td><span class="pname"></span>' + (p.id === me ? ' <span class="you">(YOU)</span>' : "") + "</td>" +
+      "<td>" + (p.kills || 0) + "</td>" +
+      "<td>" + (p.deaths || 0) + "</td>";
+    tr.querySelector(".pname").textContent = p.name;
+    body.appendChild(tr);
+  });
+}
+
+function showScoreboard(show) {
+  if (show) {
+    buildScoreboard();
+    $("scoreboard").classList.remove("hidden");
+  } else {
+    $("scoreboard").classList.add("hidden");
+  }
 }
 
 setInterval(() => {
@@ -1957,6 +2021,7 @@ function startLocalReload(now) {
 
 function localKill(victim, killer) {
   victim.health = 0;
+  victim.deaths = (victim.deaths || 0) + 1;
   addFeed(killer ? killer.name : "??", victim.name, !!(killer && killer.id === me));
 
   if (killer) {
@@ -2268,7 +2333,24 @@ sfxVol = loadLS("vol", 0.8);
 updateDiffButtons();
 
 $("resumeBtn").onclick = () => togglePause(false);
-$("quitBtn").onclick = () => leaveMatch();
+$("quitBtn").onclick = () => requestLeave();
+$("leaveYes").onclick = () => leaveMatch();
+$("leaveNo").onclick = () => $("leaveWarn").classList.add("hidden");
+
+perfMode = !!loadLS("perf", false);
+function updatePerfToggle() {
+  const btn = $("perfToggle");
+  if (btn) {
+    btn.textContent = perfMode ? "AÇIK" : "KAPALI";
+    btn.classList.toggle("on", perfMode);
+  }
+}
+$("perfToggle").onclick = () => {
+  perfMode = !perfMode;
+  saveLS("perf", perfMode);
+  updatePerfToggle();
+};
+updatePerfToggle();
 
 $("volSlider").value = Math.round(sfxVol * 100);
 $("volVal").textContent = "%" + Math.round(sfxVol * 100);

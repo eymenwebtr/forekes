@@ -789,6 +789,75 @@ input::placeholder { color: var(--faint); }
   box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
 }
 
+/* ============ SKOR TABLOSU ============ */
+#scoreboard {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 14, 17, 0.55);
+  pointer-events: none;
+}
+.sb-card {
+  width: 420px;
+  max-width: 92vw;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 26px;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+.sb-card h2 { margin: 0 0 14px; font-size: 20px; letter-spacing: 4px; }
+.sb-card table { width: 100%; border-collapse: collapse; }
+.sb-card th {
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 2px;
+  font-weight: 800;
+  padding: 0 8px 8px;
+}
+.sb-card td {
+  font-size: 14px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+.sb-card td:nth-child(1) { color: var(--faint); font-weight: 900; width: 30px; }
+.sb-card td:nth-child(2) { text-align: left; font-weight: 600; }
+.sb-card td:nth-child(3), .sb-card td:nth-child(4) { width: 60px; }
+.sb-card tr.me td { color: var(--accent); }
+.sb-card .you { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
+
+/* ============ AYRILMA UYARISI / TOGGLE ============ */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.toggle-row .pause-h { margin: 0; }
+.toggle-btn {
+  min-width: 74px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  background: var(--panel-3);
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.toggle-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
 /* ============ DURAKLATMA MENUSU ============ */
 .overlay-pause {
   background: rgba(13, 14, 17, 0.62);

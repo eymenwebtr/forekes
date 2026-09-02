@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Forekes</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161b'/%3E%3Crect x='19' y='19' width='8' height='8' rx='2' fill='%23facc15'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=21">
+  <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -164,7 +164,10 @@
         <div class="chip chip-dim" id="fpsChip">FPS <b id="fpsText">--</b></div>
         <div class="chip chip-dim">ESC <b>MENÜ</b></div>
       </div>
-      <div class="chip"><b id="killText">0</b>&nbsp;KILL</div>
+      <div class="hud-group">
+        <div class="chip"><b id="killText">0</b>&nbsp;KILL</div>
+        <div class="chip chip-accent" id="cupChip"><b id="cupText">0</b>&nbsp;KUPA</div>
+      </div>
     </div>
     <div class="hud-center">
       <div class="chip chip-timer hidden" id="timerChip"><b id="timerText">05:00</b></div>
@@ -199,6 +202,17 @@
   <div id="lowhp" class="hidden"></div>
   <div id="countdown" class="hidden"></div>
 
+  <!-- ============ SKOR TABLOSU ============ -->
+  <div id="scoreboard" class="hidden">
+    <div class="sb-card">
+      <h2>SKOR TABLOSU</h2>
+      <table id="sbTable">
+        <thead><tr><th>#</th><th>Oyuncu</th><th>Kill</th><th>Ölüm</th></tr></thead>
+        <tbody id="sbBody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- ============ SOHBET ============ -->
   <button id="chatTab" class="hidden">SOHBET</button>
   <div id="chatWrap" class="hidden">
@@ -223,6 +237,11 @@
         <span class="pause-h">SES</span>
         <input type="range" id="volSlider" min="0" max="100" value="80">
         <b id="volVal">%80</b>
+      </div>
+
+      <div class="toggle-row">
+        <span class="pause-h">PERFORMANS MODU</span>
+        <button id="perfToggle" class="toggle-btn"></button>
       </div>
 
       <div id="diffBox">
@@ -260,9 +279,21 @@
     </div>
   </div>
 
+  <!-- ============ AYRILMA UYARISI ============ -->
+  <div id="leaveWarn" class="overlay overlay-pause hidden">
+    <div class="pause-card">
+      <h2>AYRIL?</h2>
+      <p id="leaveWarnText" class="muted"></p>
+      <div class="party-actions">
+        <button id="leaveYes" class="btn btn-primary">YİNE DE ÇIK</button>
+        <button id="leaveNo" class="btn btn-ghost">KAL</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="hidden"></div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="game.js?v=17"></script>
+  <script src="game.js?v=18"></script>
 </body>
 </html>
