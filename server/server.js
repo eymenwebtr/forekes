@@ -343,6 +343,8 @@ function spawnPlayer(p, map) {
   p.reloadEnd = 0;
   p.lastShot = 0;
   p.swapEnd = 0;
+  p.lastMoveAt = Date.now();
+  p.violations = [];
   p.shieldUntil = Date.now() + SHIELD_MS;
 }
 
@@ -589,16 +591,21 @@ io.on("connection", socket => {
     const dist = Math.hypot(dx, dy);
     const maxDist = MAX_MOVE_SPEED * dt + 25;
     if (dist > maxDist) {
+      // dogum kalkani: yeniden dogma sonrasi bayat pozisyonu yoksay
+      if (p.shieldUntil > now) {
+        p.lastMoveAt = now;
+        return;
+      }
       const k = maxDist / dist;
       x = p.x + dx * k;
       y = p.y + dy * k;
 
-      // acik hile: belirgin isinlanma -> ihlal say
-      if (dist > maxDist + 150) {
+      // acik hile: cok belirgin isinlanma -> ihlal say
+      if (dist > maxDist + 300) {
         p.violations = p.violations || [];
         p.violations = p.violations.filter(t => now - t < 30000);
         p.violations.push(now);
-        if (p.violations.length >= 8) {
+        if (p.violations.length >= 12) {
           banPlayer(socket, p, "Hız hack tespit edildi");
           return;
         }
