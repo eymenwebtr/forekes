@@ -76,7 +76,6 @@ const LIMIT_OPTS = [
   { label: "30", v: 30 },
   { label: "YOK", v: 0 }
 ];
-const EMOJIS = ["😂", "😡", "💀", "🔥", "👋", "👍", "🎉", "😤"];
 const DIFFS = [
   { name: "KOLAY", speed: 165, reactMin: 550, reactMax: 950, noise: 0.3, fireMs: 420, bots: 3 },
   { name: "NORMAL", speed: 205, reactMin: 260, reactMax: 640, noise: 0.16, fireMs: 300, bots: 4 },
@@ -145,6 +144,7 @@ let diffIdx = 1;
 let stamina = 100;
 let exhausted = false;
 let lastSpPct = -1;
+let lastSyncHp = -1;
 
 let selMap = 0;
 let selDur = 300;
@@ -226,12 +226,12 @@ addEventListener("keydown", e => {
   }
   const k = e.key.toLowerCase();
   keys[k] = true;
-  if (k === "r" && running && !paused) {
+  if (e.code === "KeyR" && running && !paused) {
     if (localGame) startLocalReload(performance.now());
     else socket.emit("reload");
   }
-  if (running && (k === "1" || k === "2" || k === "3")) {
-    trySwitch(Number(k) - 1);
+  if (running && (e.code === "Digit1" || e.code === "Digit2" || e.code === "Digit3")) {
+    trySwitch(Number(e.code.slice(5)) - 1);
   }
   if (e.key === "Escape" && running) togglePause();
   if (e.key === "Enter" && running && !paused && !localGame) {
@@ -541,6 +541,7 @@ socket.on("started", data => {
   $("lobby").classList.add("hidden");
   $("party").classList.add("hidden");
   $("results").classList.add("hidden");
+  $("countdown").classList.add("hidden");
   $("hud").classList.remove("hidden");
   document.body.classList.add("ingame");
   $("roomText").textContent = room;
@@ -577,6 +578,7 @@ function backToLobby() {
   $("pause").classList.add("hidden");
   $("death").classList.add("hidden");
   $("results").classList.add("hidden");
+  $("countdown").classList.add("hidden");
   $("chatWrap").classList.add("hidden");
   $("chatTab").classList.add("hidden");
   $("lobby").classList.remove("hidden");
@@ -603,6 +605,9 @@ socket.on("state", state => {
     exhausted = false;
     lastSpPct = -1;
     updateStaminaBar();
+  }
+  if (cur && Math.round(cur.health) !== lastSyncHp) {
+    setHp(cur.health);
   }
   for (const id in players) {
     const p = players[id];
@@ -746,10 +751,10 @@ function closeChat() {
 function sendChat() {
   const inp = $("chatInput");
   const text = inp.value.trim();
-  if (!text) { closeChat(); return; }
+  if (!text) return;
   socket.emit("chat", { text });
   inp.value = "";
-  closeChat();
+  inp.focus();
 }
 function copyRoomCode() {
   if (!room || localGame) return;
@@ -778,20 +783,10 @@ socket.on("chat", data => {
 });
 $("chatTab").onclick = () => openChat();
 $("chatSend").onclick = () => sendChat();
+$("chatClose").onclick = () => closeChat();
 $("chatInput").addEventListener("input", e => {
   e.target.value = e.target.value.slice(0, 80);
 });
-
-// emoji tuslari
-(function () {
-  const box = $("chatEmojis");
-  EMOJIS.forEach(em => {
-    const b = document.createElement("button");
-    b.textContent = em;
-    b.onclick = () => socket.emit("chat", { text: em });
-    box.appendChild(b);
-  });
-})();
 
 // ---------------- mac sonucu ----------------
 function showResults(rankings, reason, mode) {
@@ -813,7 +808,7 @@ function showResults(rankings, reason, mode) {
   $("results").classList.remove("hidden");
 
   if (mode === "mp") {
-    $("resultsAgain").style.display = isParty ? "none" : "";
+    $("resultsAgain").style.display = "";
     $("resultsOk").onclick = () => {
       $("results").classList.add("hidden");
       socket.emit("leave");
@@ -821,7 +816,7 @@ function showResults(rankings, reason, mode) {
     };
     $("resultsAgain").onclick = () => {
       $("results").classList.add("hidden");
-      socket.emit("quickPlay", playerIdentity());
+      socket.emit("start");
     };
   } else {
     $("resultsOk").onclick = () => {
@@ -839,9 +834,11 @@ function showResults(rankings, reason, mode) {
 function setHp(hp) {
   const fill = $("hpFill");
   const pct = Math.max(0, Math.min(100, hp));
+  lastSyncHp = pct;
   fill.style.width = pct + "%";
   fill.className = pct <= 25 ? "low" : pct <= 50 ? "mid" : "";
   $("hpText").textContent = pct;
+  $("lowhp").classList.toggle("hidden", !(pct > 0 && pct <= 20));
 }
 
 function renderAmmo() {
@@ -1219,13 +1216,24 @@ function frame(now) {
 }
 
 function updateTimer(now) {
-  if (!matchEndsAt) return;
+  if (!matchEndsAt) {
+    $("countdown").classList.add("hidden");
+    return;
+  }
   const rem = Math.max(0, matchEndsAt - Date.now());
   const s = Math.ceil(rem / 1000);
   if (s !== lastTimerSec) {
     lastTimerSec = s;
     $("timerText").textContent = fmtTime(rem);
     $("timerChip").classList.toggle("warn", rem <= 30000);
+    if (rem <= 10000 && rem > 0) {
+      const cd = $("countdown");
+      cd.textContent = s;
+      cd.classList.remove("hidden");
+      sfx(880, 0.06, "sine", 0.15);
+    } else {
+      $("countdown").classList.add("hidden");
+    }
   }
   if (rem <= 0 && localGame && !matchEnded) {
     endLocal("time");
@@ -1958,6 +1966,7 @@ function explodeLocal(bl) {
     const d = Math.hypot(t.x - bl.x, t.y - bl.y);
     if (d <= w.splash + 19) {
       const fall = 1 - Math.min(1, d / w.splash) * 0.6;
+      t.lastHit = now;
       t.health -= w.dmg * fall;
       spawnParticles(t.x, t.y, "#f87171", 4, 130);
       if (t.id === me) {
@@ -2006,9 +2015,10 @@ function updateLocal(dt, now) {
 
         const ddx = t.x - bl.x;
         const ddy = t.y - bl.y;
-        if (ddx * ddx + ddy * ddy <= 22 * 22) {
+        if (ddx * ddx + ddy * ddy <= 25 * 25) {
           deadB = true;
           if (bl.w !== 2) {
+            t.lastHit = now;
             t.health -= WEAPONS[bl.w].dmg;
             spawnParticles(t.x, t.y, "#f87171", 5, 130);
 
@@ -2042,6 +2052,13 @@ function updateLocal(dt, now) {
     }
   }
   bullets = bullets.filter(b => !b.dead);
+
+  for (const p of Object.values(players)) {
+    if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 5000) {
+      p.health = Math.min(100, p.health + 10 * dt);
+      if (p.id === me) setHp(p.health);
+    }
+  }
 
   for (let i = localRespawns.length - 1; i >= 0; i--) {
     if (now < localRespawns[i].at) continue;

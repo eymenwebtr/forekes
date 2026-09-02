@@ -653,21 +653,30 @@ input::placeholder { color: var(--faint); }
 .chat-msg b { color: var(--accent); font-weight: 800; }
 .chat-msg.mine b { color: var(--ok); }
 .chat-msg .emoji { font-size: 20px; }
-#chatEmojis { display: flex; flex-wrap: wrap; gap: 4px; }
-#chatEmojis button {
-  width: 32px;
-  height: 32px;
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.chat-head button {
+  width: 26px;
+  height: 26px;
   border-radius: 7px;
   border: 1px solid var(--border);
   background: var(--panel-2);
-  font-size: 17px;
+  color: var(--muted);
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
 }
-#chatEmojis button:hover { background: var(--panel-3); }
+.chat-head button:hover { color: var(--danger); border-color: var(--danger); }
 .chat-row { display: flex; gap: 6px; }
-.chat-row input { flex: 1; height: 38px; }
-.chat-row .btn { height: 38px; padding: 0 12px; font-size: 11px; }
+.chat-row input { flex: 1; min-width: 0; height: 38px; }
+.chat-row .btn { flex: none; height: 38px; padding: 0 12px; font-size: 11px; }
 
 /* ============ SES ============ */
 .vol-row {
@@ -699,6 +708,19 @@ input::placeholder { color: var(--faint); }
   z-index: 6;
   pointer-events: none;
   border: 3px solid transparent;
+}
+#countdown {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  font-size: 140px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--accent);
+  pointer-events: none;
+  -webkit-text-stroke: 3px rgba(13, 14, 17, 0.9);
 }
 #vignette.hit { animation: hitflash 0.35s ease-out; }
 @keyframes hitflash {

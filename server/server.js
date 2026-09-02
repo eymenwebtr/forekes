@@ -93,7 +93,7 @@ const WEAPONS = [
 const SWAP_MS = 600;
 
 const MAX_PLAYERS = 10;
-const HIT_R = 22;
+const HIT_R = 25;
 const SHIELD_MS = 1400;
 const RESPAWN_MS = 900;
 
@@ -424,7 +424,7 @@ io.on("connection", socket => {
 
   socket.on("start", () => {
     const r = rooms.get(socket.data.room);
-    if (!r || r.state !== "waiting" || r.leader !== socket.id) return;
+    if (!r || r.state !== "waiting") return;
 
     r.state = "playing";
     r.endsAt = r.durationSec > 0 ? Date.now() + r.durationSec * 1000 : 0;
@@ -585,6 +585,7 @@ io.on("connection", socket => {
 function applyDamage(code, r, target, dmg, shooterId, direct) {
   if (target.health <= 0) return;
 
+  target.lastHit = Date.now();
   target.health -= dmg;
   io.to(code).emit("damaged", { id: target.id, health: Math.max(0, target.health) });
 
@@ -730,6 +731,12 @@ setInterval(() => {
     }
 
     r.bullets = next;
+
+    for (const p of r.players.values()) {
+      if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 5000) {
+        p.health = Math.min(100, p.health + 10 * dt);
+      }
+    }
 
     if (now - (r.lastNet || 0) >= 33) {
       r.lastNet = now;
