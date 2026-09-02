@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Forekes</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161b'/%3E%3Crect x='19' y='19' width='8' height='8' rx='2' fill='%23facc15'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=20">
+  <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -43,46 +43,48 @@
         <main class="panel">
           <!-- OYNA -->
           <section id="tab-play" class="tab active">
-            <div class="play-grid">
-              <div class="play-left">
-                <h2>Savaşa gir</h2>
-                <p class="muted">8 oyuncuya kadar arena. Ele, kupa kazan, yüksel.</p>
-                <button id="quickBtn" class="btn btn-primary btn-big">
-                  <svg viewBox="0 0 24 24" class="ic"><path d="M8 5v14l11-7z"/></svg>
-                  HIZLI OYNA
-                </button>
-                <button id="singleBtn" class="btn btn-ghost btn-big">
-                  <svg viewBox="0 0 24 24" class="ic"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
-                  TEK OYUNCU
-                </button>
-                <button id="createBtn" class="btn btn-ghost btn-big">
-                  <svg viewBox="0 0 24 24" class="ic"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-7 1.7-7 4v3h14v-3c0-2.3-3.7-4-7-4zm8-2a3 3 0 1 0-2-5.2 6 6 0 0 1-.5 5.2H17z"/></svg>
-                  PARTİ OLUŞTUR
-                </button>
-                <div class="join">
-                  <input id="roomInput" maxlength="6" placeholder="ODA KODU" spellcheck="false" autocomplete="off">
-                  <button id="joinBtn" class="btn">KATIL</button>
-                </div>
+            <h2>Savaşa gir</h2>
+            <p class="muted">Arenaya atıl, ele, kupa kazan.</p>
 
-                <div class="match-settings">
-                  <div class="opt-group">
-                    <span class="opt-label">HARİTA</span>
-                    <div class="opt-row" id="optMap"></div>
-                  </div>
-                  <div class="opt-group">
-                    <span class="opt-label">SÜRE</span>
-                    <div class="opt-row" id="optDur"></div>
-                  </div>
-                  <div class="opt-group">
-                    <span class="opt-label">SKOR HEDEFİ</span>
-                    <div class="opt-row" id="optLimit"></div>
-                  </div>
-                  <p class="hint">Tek Oyuncu ve Parti Oluştur bu ayarları kullanır. Hızlı Oyna rastgele harita + 5dk kullanır.</p>
-                </div>
+            <div class="play-actions">
+              <button id="quickBtn" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" class="ic"><path d="M8 5v14l11-7z"/></svg>HIZLI OYNA
+              </button>
+              <button id="singleBtn" class="btn btn-ghost">
+                <svg viewBox="0 0 24 24" class="ic"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>TEK OYUNCU
+              </button>
+              <button id="createBtn" class="btn btn-ghost">
+                <svg viewBox="0 0 24 24" class="ic"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-7 1.7-7 4v3h14v-3c0-2.3-3.7-4-7-4zm8-2a3 3 0 1 0-2-5.2 6 6 0 0 1-.5 5.2H17z"/></svg>PARTİ OLUŞTUR
+              </button>
+            </div>
+
+            <div class="join">
+              <input id="roomInput" maxlength="6" placeholder="ODA KODU" spellcheck="false" autocomplete="off">
+              <button id="joinBtn" class="btn">KATIL</button>
+            </div>
+
+            <div class="match-settings">
+              <div class="opt-group">
+                <span class="opt-label">HARİTA</span>
+                <div class="opt-row" id="optMap"></div>
               </div>
-              <div class="play-right">
+              <div class="opt-group">
+                <span class="opt-label">SÜRE</span>
+                <div class="opt-row" id="optDur"></div>
+              </div>
+              <div class="opt-group">
+                <span class="opt-label">SKOR HEDEFİ</span>
+                <div class="opt-row" id="optLimit"></div>
+              </div>
+              <p class="hint set-hint">Tek Oyuncu ve Parti bu ayarları kullanır; Hızlı Oyna rastgele.</p>
+            </div>
+
+            <div class="play-bottom">
+              <div class="play-preview">
                 <h3>Harita</h3>
                 <canvas id="mapPrev" width="264" height="156"></canvas>
+              </div>
+              <div class="play-controls">
                 <h3>Kontroller</h3>
                 <div class="controls">
                   <div><b>W A S D</b><span>Hareket</span></div>
@@ -90,7 +92,7 @@
                   <div><b>Sol tık</b><span>Ateş</span></div>
                   <div><b>1 2 3</b><span>Silah değiştir</span></div>
                   <div><b>R</b><span>Şarjör</span></div>
-                  <div><b>Shift</b><span>Koş (dayanıklılık)</span></div>
+                  <div><b>Shift</b><span>Koş</span></div>
                   <div><b>Q</b><span>Dash</span></div>
                   <div><b>Tekerlek</b><span>Silah çevir</span></div>
                   <div><b>ESC</b><span>Çıkış</span></div>

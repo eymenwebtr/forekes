@@ -222,11 +222,11 @@ input::placeholder { color: var(--faint); }
 .tab.active { display: block; }
 
 /* --- Oyna sekmesi --- */
-.play-grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 30px; }
-.play-left .btn-big { margin-bottom: 8px; }
-.play-left h2 { margin-bottom: 6px; }
-.play-left .muted { margin-bottom: 14px; }
-.join { display: flex; gap: 8px; margin-top: 12px; }
+#tab-play .muted { margin-bottom: 14px; }
+.play-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.play-actions .btn { height: 46px; font-size: 13px; padding: 0 10px; }
+
+.join { display: flex; gap: 8px; margin-bottom: 12px; }
 .join input {
   flex: 1;
   text-transform: uppercase;
@@ -235,6 +235,9 @@ input::placeholder { color: var(--faint); }
   text-align: center;
 }
 .join .btn { flex: none; width: 92px; }
+
+.play-bottom { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 22px; }
+.play-bottom h3 { margin: 0 0 8px; }
 
 #mapPrev {
   width: 100%;
@@ -605,14 +608,16 @@ input::placeholder { color: var(--faint); }
 
 /* ============ MAC AYARLARI ============ */
 .match-settings {
-  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 14px;
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--panel-2);
+  margin-bottom: 14px;
 }
-.opt-group { margin-bottom: 9px; }
-.opt-group:last-of-type { margin-bottom: 8px; }
+.set-hint { grid-column: 1 / -1; margin: 0; font-size: 11px; }
 .opt-label {
   display: block;
   font-size: 10px;
@@ -623,8 +628,8 @@ input::placeholder { color: var(--faint); }
 }
 .opt-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .opt-btn {
-  flex: 1 1 68px;
-  height: 32px;
+  flex: 1 1 60px;
+  height: 30px;
   padding: 0 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
