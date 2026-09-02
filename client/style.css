@@ -452,6 +452,7 @@ input::placeholder { color: var(--faint); }
 .hp-bar i { display: block; height: 100%; width: 100%; background: #e8edf2; transition: width 0.15s; }
 .hp-bar i.mid { background: var(--accent); }
 .hp-bar i.low { background: var(--danger); }
+.hp-bar i.regen { background: #4ade80 !important; }
 .sp-bar {
   width: 190px;
   height: 7px;

@@ -60,9 +60,9 @@ const FIRE_MS = 160;
 const RELOAD_MS = 1100;
 const SWAP_MS = 600;
 const WEAPONS = [
-  { id: 0, name: "TABANCA", mag: 8, dmg: 25, pellets: 1, spread: 0, speed: 850, range: 900, fireMs: 160, reloadMs: 1100 },
-  { id: 1, name: "POMPALI", mag: 4, dmg: 15, pellets: 6, spread: 0.2, speed: 700, range: 380, fireMs: 750, reloadMs: 1400 },
-  { id: 2, name: "BAZUKA", mag: 1, dmg: 65, pellets: 1, spread: 0, speed: 520, range: 750, fireMs: 1100, reloadMs: 1800, splash: 130 }
+  { id: 0, name: "TABANCA", mag: 8, dmg: 24, pellets: 1, spread: 0, speed: 850, range: 520, fireMs: 160, reloadMs: 1100 },
+  { id: 1, name: "POMPALI", mag: 4, dmg: 14, pellets: 6, spread: 0.2, speed: 700, range: 340, fireMs: 750, reloadMs: 1400 },
+  { id: 2, name: "BAZUKA", mag: 1, dmg: 65, pellets: 1, spread: 0, speed: 520, range: 700, fireMs: 1100, reloadMs: 1800, splash: 130 }
 ];
 const DUR_OPTS = [
   { label: "2DK", s: 120 },
@@ -145,6 +145,7 @@ let stamina = 100;
 let exhausted = false;
 let lastSpPct = -1;
 let lastSyncHp = -1;
+let regenFlash = null;
 
 let selMap = 0;
 let selDur = 300;
@@ -833,11 +834,17 @@ function showResults(rankings, reason, mode) {
 function setHp(hp) {
   const fill = $("hpFill");
   const pct = Math.max(0, Math.min(100, hp));
+  const increasing = pct > lastSyncHp && lastSyncHp >= 0;
   lastSyncHp = pct;
   fill.style.width = pct + "%";
   fill.className = pct <= 25 ? "low" : pct <= 50 ? "mid" : "";
   $("hpText").textContent = pct;
   $("lowhp").classList.toggle("hidden", !(pct > 0 && pct <= 20));
+  if (increasing) {
+    fill.classList.add("regen");
+    clearTimeout(regenFlash);
+    regenFlash = setTimeout(() => fill.classList.remove("regen"), 400);
+  }
 }
 
 function renderAmmo() {
@@ -1716,7 +1723,7 @@ function leaveMatch() {
 
 setInterval(() => {
   if (socket.connected) socket.emit("ping", Date.now());
-}, 2000);
+}, 1000);
 
 socket.on("pong", t => {
   ping = Date.now() - t;
@@ -2064,8 +2071,8 @@ function updateLocal(dt, now) {
   bullets = bullets.filter(b => !b.dead);
 
   for (const p of Object.values(players)) {
-    if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 5000) {
-      p.health = Math.min(100, p.health + 10 * dt);
+    if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 3000) {
+      p.health = Math.min(100, p.health + 15 * dt);
       if (p.id === me) setHp(p.health);
     }
   }

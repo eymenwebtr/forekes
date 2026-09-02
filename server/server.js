@@ -86,9 +86,9 @@ const MAPS = [
 
 // 0: Tabanca, 1: Pompali, 2: Bazuka
 const WEAPONS = [
-  { id: 0, name: "Tabanca", mag: 8, dmg: 25, pellets: 1, spread: 0, speed: 850, range: 900, fireMs: 160, reloadMs: 1100 },
-  { id: 1, name: "Pompalı", mag: 4, dmg: 15, pellets: 6, spread: 0.2, speed: 700, range: 380, fireMs: 750, reloadMs: 1400 },
-  { id: 2, name: "Bazuka", mag: 1, dmg: 65, pellets: 1, spread: 0, speed: 520, range: 750, fireMs: 1100, reloadMs: 1800, splash: 130 }
+  { id: 0, name: "Tabanca", mag: 8, dmg: 24, pellets: 1, spread: 0, speed: 850, range: 520, fireMs: 160, reloadMs: 1100 },
+  { id: 1, name: "Pompalı", mag: 4, dmg: 14, pellets: 6, spread: 0.2, speed: 700, range: 340, fireMs: 750, reloadMs: 1400 },
+  { id: 2, name: "Bazuka", mag: 1, dmg: 65, pellets: 1, spread: 0, speed: 520, range: 700, fireMs: 1100, reloadMs: 1800, splash: 130 }
 ];
 const SWAP_MS = 600;
 
@@ -743,8 +743,8 @@ setInterval(() => {
     r.bullets = next;
 
     for (const p of r.players.values()) {
-      if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 5000) {
-        p.health = Math.min(100, p.health + 10 * dt);
+      if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 3000) {
+        p.health = Math.min(100, p.health + 15 * dt);
       }
     }
 
