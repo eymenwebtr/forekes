@@ -900,6 +900,8 @@ input::placeholder { color: var(--faint); }
   border-color: var(--accent);
   color: var(--accent-ink);
   background: var(--accent);
+  font-weight: 900;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.45);
 }
 #diffBox { margin-bottom: 16px; }
 #gfxBox { margin-bottom: 12px; }

@@ -2398,6 +2398,7 @@ document.querySelectorAll(".q-btn").forEach(btn => {
     saveLS("quality", quality);
     updateQualityButtons();
     if (mapData) cacheWorld();
+    toast(["Performans", "Dengeli", "Maks Kalite"][quality] + " seçildi");
   };
 });
 updateQualityButtons();
