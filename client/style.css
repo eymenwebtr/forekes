@@ -126,7 +126,7 @@ input::placeholder { color: var(--faint); }
   width: 880px;
   max-width: 94vw;
   max-height: 94vh;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .top {
