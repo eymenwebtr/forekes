@@ -904,8 +904,6 @@ input::placeholder { color: var(--faint); }
   box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.45);
 }
 #diffBox { margin-bottom: 16px; }
-#gfxBox { margin-bottom: 12px; }
-#gfxBox .pause-h { margin: 0 0 10px; }
 #diffBox .hint { margin: 8px 0 0; }
 .pause-card .btn-big { margin-bottom: 10px; }
 .pause-card .btn-big:last-child { margin-bottom: 0; }

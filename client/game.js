@@ -227,7 +227,6 @@ let fps = 0;
 let fpsFrames = 0;
 let fpsLast = 0;
 let matchCups = 0;
-let quality = 1;
 let sensitivity = 1;
 
 let selMap = 0;
@@ -1033,15 +1032,13 @@ function cacheWorld() {
   g.fillStyle = th.floor;
   g.fillRect(0, 0, w, h);
 
-  if (quality > 0) {
-    g.strokeStyle = th.grid;
-    g.lineWidth = 1;
-    for (let x = 0; x <= w; x += 50) {
-      g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
-    }
-    for (let y = 0; y <= h; y += 50) {
-      g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
-    }
+  g.strokeStyle = th.grid;
+  g.lineWidth = 1;
+  for (let x = 0; x <= w; x += 50) {
+    g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
+  }
+  for (let y = 0; y <= h; y += 50) {
+    g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
   }
 
   for (const [x, y, ww, hh] of mapData.walls) {
@@ -1050,11 +1047,9 @@ function cacheWorld() {
     g.strokeStyle = th.wallBorder;
     g.lineWidth = 4;
     g.strokeRect(x, y, ww, hh);
-    if (quality >= 2) {
-      g.strokeStyle = "rgba(255,255,255,0.07)";
-      g.lineWidth = 2;
-      g.strokeRect(x + 4, y + 4, ww - 8, hh - 8);
-    }
+    g.strokeStyle = "rgba(255,255,255,0.07)";
+    g.lineWidth = 2;
+    g.strokeRect(x + 4, y + 4, ww - 8, hh - 8);
   }
 
   g.strokeStyle = th.border;
@@ -1187,7 +1182,6 @@ function camScale() {
 }
 
 function spawnParticles(x, y, color, count, speed) {
-  count = Math.max(2, Math.round(count * [0.2, 0.7, 1.3][quality]));
   for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
     const v = speed * (0.4 + Math.random() * 0.8);
@@ -1468,7 +1462,7 @@ function draw(now) {
   ctx.clearRect(0, 0, innerWidth, innerHeight);
 
   const scale = camScale();
-  const sh = shake * [0, 0.5, 1][quality];
+  const sh = shake;
   const ox = innerWidth / 2 - p.x * scale + (Math.random() - 0.5) * sh;
   const oy = innerHeight / 2 - p.y * scale + (Math.random() - 0.5) * sh;
 
@@ -1483,7 +1477,7 @@ function draw(now) {
   drawParticles();
 
   const wdef = WEAPONS[ammo.weapon];
-  if (quality > 0 && p.health > 0) {
+  if (p.health > 0) {
     const col = wdef.id === 0 ? "232,237,242" : "250,204,21";
 
     ctx.beginPath();
@@ -1517,7 +1511,7 @@ function draw(now) {
     if (shake < 0.3) shake = 0;
   }
 
-  if (quality > 0) drawMinimap();
+  drawMinimap();
   drawCrosshair(now);
 }
 
@@ -2386,23 +2380,6 @@ $("quitBtn").onclick = () => requestLeave();
 $("leaveYes").onclick = () => leaveMatch();
 $("leaveNo").onclick = () => $("leaveWarn").classList.add("hidden");
 
-quality = Math.min(2, Math.max(0, loadLS("quality", 1)));
-function updateQualityButtons() {
-  document.querySelectorAll(".q-btn").forEach(btn => {
-    btn.classList.toggle("active", Number(btn.dataset.q) === quality);
-  });
-}
-document.querySelectorAll(".q-btn").forEach(btn => {
-  btn.onclick = () => {
-    quality = Number(btn.dataset.q);
-    saveLS("quality", quality);
-    updateQualityButtons();
-    if (mapData) cacheWorld();
-    toast(["Performans", "Dengeli", "Maks Kalite"][quality] + " seçildi");
-  };
-});
-updateQualityButtons();
-
 sensitivity = loadLS("sens", 1);
 $("sensSlider").value = Math.round(sensitivity * 100);
 $("sensVal").textContent = sensitivity.toFixed(1);
@@ -2415,22 +2392,18 @@ $("sensSlider").addEventListener("input", e => {
 function saveSettings() {
   saveLS("vol", sfxVol);
   saveLS("sens", sensitivity);
-  saveLS("quality", quality);
   saveLS("diff", diffIdx);
   toast("Ayarlar kaydedildi.");
 }
 function resetSettings() {
   sfxVol = 0.8;
   sensitivity = 1;
-  quality = 1;
   saveLS("vol", sfxVol);
   saveLS("sens", sensitivity);
-  saveLS("quality", quality);
   $("volSlider").value = 80;
   $("volVal").textContent = "%80";
   $("sensSlider").value = 100;
   $("sensVal").textContent = "1.0";
-  updateQualityButtons();
   toast("Ayarlar sıfırlandı.");
 }
 $("saveBtn").onclick = saveSettings;
