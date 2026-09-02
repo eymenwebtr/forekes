@@ -770,10 +770,9 @@ function addChatMsg(name, text, mine) {
   const log = $("chatLog");
   const d = document.createElement("div");
   d.className = "chat-msg" + (mine ? " mine" : "");
-  const emojiOnly = /^[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}0-9\s]+$/u.test(text);
-  d.innerHTML = "<b></b> " + (emojiOnly ? '<span class="emoji"></span>' : "<span></span>");
+  d.innerHTML = "<b></b> <span></span>";
   d.querySelector("b").textContent = name + ":";
-  d.querySelector(emojiOnly ? ".emoji" : "span").textContent = text;
+  d.querySelector("span").textContent = text;
   log.appendChild(d);
   while (log.children.length > 30) log.firstChild.remove();
   log.scrollTop = log.scrollHeight;
@@ -1397,6 +1396,12 @@ function drawPlayers() {
     ctx.font = "bold 13px 'Segoe UI', Arial";
     ctx.textAlign = "center";
     ctx.fillText(p.name, px, py - 41);
+
+    if (p.ping > 0) {
+      ctx.font = "bold 10px 'Segoe UI', Arial";
+      ctx.fillStyle = pingColor(p.ping);
+      ctx.fillText(p.ping + "ms", px, py - 53);
+    }
   }
 }
 
@@ -1717,8 +1722,13 @@ socket.on("pong", t => {
   ping = Date.now() - t;
   const el = $("pingText");
   el.textContent = ping + "ms";
-  el.style.color = ping <= 60 ? "#4ade80" : ping <= 120 ? "#facc15" : "#f87171";
+  el.style.color = pingColor(ping);
+  if (ping > 0) socket.emit("pingReport", ping);
 });
+
+function pingColor(ms) {
+  return ms <= 60 ? "#4ade80" : ms <= 120 ? "#facc15" : "#f87171";
+}
 
 function localShoot(p, angle, now) {
   const isMe = p.id === me;
@@ -2015,7 +2025,7 @@ function updateLocal(dt, now) {
 
         const ddx = t.x - bl.x;
         const ddy = t.y - bl.y;
-        if (ddx * ddx + ddy * ddy <= 25 * 25) {
+        if (ddx * ddx + ddy * ddy <= 26 * 26) {
           deadB = true;
           if (bl.w !== 2) {
             t.lastHit = now;

@@ -93,7 +93,7 @@ const WEAPONS = [
 const SWAP_MS = 600;
 
 const MAX_PLAYERS = 10;
-const HIT_R = 25;
+const HIT_R = 26;
 const SHIELD_MS = 1400;
 const RESPAWN_MS = 900;
 
@@ -208,6 +208,7 @@ function publicPlayers(r) {
       y: p.y,
       angle: p.angle,
       health: p.health,
+      ping: p.ping || 0,
       shield: p.shieldUntil > now
     };
   }
@@ -295,6 +296,7 @@ function enterRoom(socket, code, name, skin) {
     reloadEnd: 0,
     lastShot: 0,
     swapEnd: 0,
+    ping: 0,
     shieldUntil: 0
   };
 
@@ -360,7 +362,7 @@ io.on("connection", socket => {
     skin = Number(skin) || 0;
 
     for (const [code, r] of rooms) {
-      if (r.state === "playing" && r.players.size < MAX_PLAYERS) {
+      if (r.state === "playing" && !r.isParty && r.players.size < MAX_PLAYERS) {
         enterRoom(socket, code, name, skin);
         return;
       }
@@ -555,6 +557,14 @@ io.on("connection", socket => {
 
   socket.on("ping", t => {
     socket.emit("pong", t);
+  });
+
+  socket.on("pingReport", ms => {
+    const r = rooms.get(socket.data.room);
+    const p = r && r.players.get(socket.id);
+    if (!p) return;
+    ms = Number(ms);
+    if (Number.isFinite(ms)) p.ping = Math.max(0, Math.min(9999, Math.round(ms)));
   });
 
   socket.on("friendsCheck", ({ names }) => {

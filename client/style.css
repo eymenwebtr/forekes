@@ -652,7 +652,6 @@ input::placeholder { color: var(--faint); }
 }
 .chat-msg b { color: var(--accent); font-weight: 800; }
 .chat-msg.mine b { color: var(--ok); }
-.chat-msg .emoji { font-size: 20px; }
 .chat-head {
   display: flex;
   align-items: center;
