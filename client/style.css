@@ -28,7 +28,7 @@ html, body {
 
 body.ingame, body.ingame canvas { cursor: none; }
 
-canvas#game { display: block; position: fixed; inset: 0; }
+canvas#game { display: block; position: fixed; inset: 0; background: #1d232d; }
 
 .hidden { display: none !important; }
 

@@ -524,6 +524,10 @@ socket.on("started", data => {
   screen = "game";
   running = true;
   matchEnded = false;
+  $("lobby").classList.add("hidden");
+  $("party").classList.add("hidden");
+  $("results").classList.add("hidden");
+  $("countdown").classList.add("hidden");
   isParty = !!data.party;
   killLimit = data.killLimit || 0;
   pendingMap = data.map !== undefined ? data.map : 0;
@@ -541,10 +545,6 @@ socket.on("started", data => {
   updateStaminaBar();
   renderAmmo();
 
-  $("lobby").classList.add("hidden");
-  $("party").classList.add("hidden");
-  $("results").classList.add("hidden");
-  $("countdown").classList.add("hidden");
   $("hud").classList.remove("hidden");
   document.body.classList.add("ingame");
   $("roomText").textContent = room;
@@ -1312,10 +1312,10 @@ function draw(now) {
 }
 
 function drawWorld() {
-  ctx.fillStyle = "#16181d";
+  ctx.fillStyle = "#1d232d";
   ctx.fillRect(0, 0, mapData.w, mapData.h);
 
-  ctx.strokeStyle = "#1d2026";
+  ctx.strokeStyle = "#2a323e";
   ctx.lineWidth = 1;
   for (let x = 0; x <= mapData.w; x += 50) {
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, mapData.h); ctx.stroke();
@@ -1325,14 +1325,14 @@ function drawWorld() {
   }
 
   for (const [x, y, w, h] of mapData.walls) {
-    ctx.fillStyle = "#23262d";
+    ctx.fillStyle = "#3d4654";
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = "#414652";
+    ctx.strokeStyle = "#5a6578";
     ctx.lineWidth = 4;
     ctx.strokeRect(x, y, w, h);
   }
 
-  ctx.strokeStyle = "#565d68";
+  ctx.strokeStyle = "#79828f";
   ctx.lineWidth = 7;
   ctx.strokeRect(8, 8, mapData.w - 16, mapData.h - 16);
 }
@@ -1606,10 +1606,6 @@ function applyDifficulty(idx) {
 }
 
 function startLocal() {
-  if (!mapsCatalog) {
-    toast("Haritalar henüz yüklenmedi, biraz bekle.");
-    return;
-  }
   lastLocalSettings = { map: selMap, dur: selDur, limit: selLimit };
   const identity = playerIdentity();
   pendingMap = selMap;
