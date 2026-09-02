@@ -186,6 +186,7 @@ let screen = "lobby";
 let mapData = null;
 let mapsCatalog = null;
 let worldDims = { w: 2200, h: 1300 };
+let worldCanvas = null;
 let players = {};
 let bullets = [];
 let particles = [];
@@ -1017,7 +1018,38 @@ function setMap(idx) {
     name: m.name,
     theme: m.theme || DEFAULT_THEME
   };
+  cacheWorld();
   drawMapPreview();
+}
+
+function cacheWorld() {
+  const w = mapData.w;
+  const h = mapData.h;
+  worldCanvas = document.createElement("canvas");
+  worldCanvas.width = w;
+  worldCanvas.height = h;
+  const g = worldCanvas.getContext("2d");
+  const th = mapData.theme || DEFAULT_THEME;
+  g.fillStyle = th.floor;
+  g.fillRect(0, 0, w, h);
+  g.strokeStyle = th.grid;
+  g.lineWidth = 1;
+  for (let x = 0; x <= w; x += 50) {
+    g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
+  }
+  for (let y = 0; y <= h; y += 50) {
+    g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
+  }
+  for (const [x, y, ww, hh] of mapData.walls) {
+    g.fillStyle = th.wall;
+    g.fillRect(x, y, ww, hh);
+    g.strokeStyle = th.wallBorder;
+    g.lineWidth = 4;
+    g.strokeRect(x, y, ww, hh);
+  }
+  g.strokeStyle = th.border;
+  g.lineWidth = 7;
+  g.strokeRect(8, 8, w - 16, h - 16);
 }
 
 function drawMapPreview() {
@@ -1480,6 +1512,10 @@ function draw(now) {
 }
 
 function drawWorld() {
+  if (worldCanvas) {
+    ctx.drawImage(worldCanvas, 0, 0);
+    return;
+  }
   const th = mapData.theme || DEFAULT_THEME;
   ctx.fillStyle = th.floor;
   ctx.fillRect(0, 0, mapData.w, mapData.h);
@@ -2363,10 +2399,6 @@ $("sensSlider").addEventListener("input", e => {
   $("sensVal").textContent = sensitivity.toFixed(1);
   saveLS("sens", sensitivity);
 });
-
-$("gearBtn").onclick = () => {
-  if (running) togglePause();
-};
 
 function saveSettings() {
   saveLS("vol", sfxVol);

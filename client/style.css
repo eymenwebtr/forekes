@@ -424,21 +424,6 @@ input::placeholder { color: var(--faint); }
 .chip-dim b { color: var(--faint); }
 .chip-room { pointer-events: auto; cursor: pointer; }
 .chip-room:hover { border-color: var(--accent); }
-.hud-gear {
-  pointer-events: auto;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: rgba(13, 14, 17, 0.88);
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.hud-gear:hover { color: var(--text); border-color: var(--border-2); }
-.hud-gear .ic { width: 18px; height: 18px; }
 
 .hud-center {
   position: absolute;
@@ -750,8 +735,8 @@ input::placeholder { color: var(--faint); }
 .vol-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 .vol-row .pause-h { margin: 0; }
 .vol-row input[type="range"] {
@@ -868,34 +853,8 @@ input::placeholder { color: var(--faint); }
 .sb-card tr.me td { color: var(--accent); }
 .sb-card .you { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
 
-/* ============ AYRILMA UYARISI / TOGGLE ============ */
-.toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.toggle-row .pause-h { margin: 0; }
-.toggle-btn {
-  min-width: 74px;
-  height: 30px;
-  border-radius: 999px;
-  border: 1px solid var(--border-2);
-  background: var(--panel-3);
-  color: var(--muted);
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-}
-.toggle-btn.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
-}
-.settings-actions { display: flex; gap: 8px; margin-top: 2px; }
+/* ============ AYRILMA UYARISI ============ */
+.settings-actions { display: flex; gap: 8px; margin-top: 10px; }
 .settings-actions .btn { flex: 1; height: 40px; font-size: 12px; }
 
 /* ============ DURAKLATMA MENUSU ============ */
@@ -910,7 +869,7 @@ input::placeholder { color: var(--faint); }
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 28px 30px;
+  padding: 30px 32px;
   text-align: center;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
 }
@@ -923,7 +882,7 @@ input::placeholder { color: var(--faint); }
   letter-spacing: 2px;
   font-weight: 800;
 }
-.diff-row { display: flex; gap: 7px; margin-bottom: 6px; }
+.diff-row { display: flex; gap: 8px; margin-bottom: 8px; }
 .diff-btn {
   flex: 1;
   height: 42px;
