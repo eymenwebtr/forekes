@@ -463,6 +463,15 @@ input::placeholder { color: var(--faint); }
 }
 .sp-bar i { display: block; height: 100%; width: 100%; background: #57b4ea; transition: width 0.1s; }
 .sp-bar i.low { background: var(--danger); }
+.dash-bar {
+  width: 190px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(13, 14, 17, 0.88);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.dash-bar i { display: block; height: 100%; width: 100%; background: #a855f7; transition: width 0.1s; }
 #hpText { font-weight: 900; font-size: 15px; }
 
 .ammo-wrap {

@@ -28,17 +28,13 @@ const WORLD = { w: 2200, h: 1300 };
 const MAPS = [
   {
     name: "SİMETRİK",
+    theme: { floor: "#1d232d", grid: "#2a323e", wall: "#3d4654", wallBorder: "#5a6578", border: "#79828f" },
     walls: [
-      [900, 60, 400, 70],
-      [900, 1170, 400, 70],
-      [330, 320, 110, 280],
-      [1760, 320, 110, 280],
-      [1040, 565, 120, 170],
-      [610, 500, 110, 110],
-      [1480, 500, 110, 110],
-      [140, 520, 100, 100],
-      [1960, 520, 100, 100],
-      [140, 940, 280, 70],
+      [900, 60, 400, 70], [900, 1170, 400, 70],
+      [330, 320, 110, 280], [1760, 320, 110, 280],
+      [1040, 565, 120, 170], [610, 500, 110, 110],
+      [1480, 500, 110, 110], [140, 520, 100, 100],
+      [1960, 520, 100, 100], [140, 940, 280, 70],
       [1780, 940, 280, 70]
     ],
     spawns: [
@@ -48,19 +44,14 @@ const MAPS = [
   },
   {
     name: "KAPALI",
+    theme: { floor: "#12222a", grid: "#1c3340", wall: "#1f4a52", wallBorder: "#2f6f7a", border: "#4a94a0" },
     walls: [
-      [900, 60, 400, 70],
-      [900, 1170, 400, 70],
-      [330, 320, 110, 280],
-      [1760, 320, 110, 280],
-      [1040, 565, 120, 170],
-      [560, 200, 90, 90],
-      [1550, 200, 90, 90],
-      [560, 1010, 90, 90],
-      [1550, 1010, 90, 90],
-      [140, 520, 100, 260],
-      [1960, 520, 100, 260],
-      [140, 940, 280, 70],
+      [900, 60, 400, 70], [900, 1170, 400, 70],
+      [330, 320, 110, 280], [1760, 320, 110, 280],
+      [1040, 565, 120, 170], [560, 200, 90, 90],
+      [1550, 200, 90, 90], [560, 1010, 90, 90],
+      [1550, 1010, 90, 90], [140, 520, 100, 260],
+      [1960, 520, 100, 260], [140, 940, 280, 70],
       [1780, 940, 280, 70]
     ],
     spawns: [
@@ -70,25 +61,56 @@ const MAPS = [
   },
   {
     name: "AÇIK",
+    theme: { floor: "#241d14", grid: "#33291b", wall: "#4a3a22", wallBorder: "#6b5532", border: "#9a7f4a" },
     walls: [
-      [900, 60, 400, 70],
-      [900, 1170, 400, 70],
-      [1040, 565, 120, 170],
-      [330, 420, 110, 460],
+      [900, 60, 400, 70], [900, 1170, 400, 70],
+      [1040, 565, 120, 170], [330, 420, 110, 460],
       [1760, 420, 110, 460]
     ],
     spawns: [
       [100, 100], [2100, 100], [100, 1200], [2100, 1200],
       [1100, 250], [1100, 1050], [100, 780], [2100, 780]
     ]
+  },
+  {
+    name: "NEON",
+    theme: { floor: "#14121f", grid: "#241f3a", wall: "#3a2a6b", wallBorder: "#7a4ae0", border: "#c06bff" },
+    walls: [
+      [600, 140, 200, 80], [1400, 140, 200, 80],
+      [900, 380, 400, 60],
+      [480, 700, 140, 140], [1580, 700, 140, 140],
+      [900, 700, 200, 120],
+      [300, 900, 240, 70], [1660, 900, 240, 70],
+      [900, 1140, 300, 70]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [1100, 280], [1100, 1000], [380, 600], [1820, 600]
+    ]
+  },
+  {
+    name: "ORMAN",
+    theme: { floor: "#14201a", grid: "#1f3324", wall: "#2a4a2f", wallBorder: "#3f6b45", border: "#5f9a68" },
+    walls: [
+      [380, 180, 90, 90], [1730, 180, 90, 90],
+      [1100, 220, 90, 90],
+      [380, 930, 90, 90], [1730, 930, 90, 90],
+      [1100, 970, 90, 90],
+      [180, 540, 90, 90], [1930, 540, 90, 90],
+      [1050, 500, 200, 200]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [600, 330], [1600, 330], [600, 970], [1600, 970]
+    ]
   }
 ];
 
 // 0: Tabanca, 1: Pompali, 2: Bazuka
 const WEAPONS = [
-  { id: 0, name: "Tabanca", mag: 8, dmg: 24, pellets: 1, spread: 0, speed: 850, range: 520, fireMs: 160, reloadMs: 1100 },
-  { id: 1, name: "Pompalı", mag: 4, dmg: 14, pellets: 6, spread: 0.2, speed: 700, range: 340, fireMs: 750, reloadMs: 1400 },
-  { id: 2, name: "Bazuka", mag: 1, dmg: 65, pellets: 1, spread: 0, speed: 520, range: 700, fireMs: 1100, reloadMs: 1800, splash: 130 }
+  { id: 0, name: "Tabanca", mag: 8, dmg: 24, falloff: 0.15, pellets: 1, spread: 0, speed: 850, range: 520, fireMs: 160, reloadMs: 1100 },
+  { id: 1, name: "Pompalı", mag: 4, dmg: 16, falloff: 0.7, pellets: 6, spread: 0.2, speed: 700, range: 340, fireMs: 750, reloadMs: 1400 },
+  { id: 2, name: "Bazuka", mag: 1, dmg: 65, falloff: 0, pellets: 1, spread: 0, speed: 520, range: 700, fireMs: 1100, reloadMs: 1800, splash: 130 }
 ];
 const SWAP_MS = 600;
 
@@ -353,7 +375,7 @@ function leaveRoom(socket) {
 io.on("connection", socket => {
   socket.emit("maps", {
     world: WORLD,
-    maps: MAPS.map(m => ({ name: m.name, walls: m.walls, spawns: m.spawns }))
+    maps: MAPS.map(m => ({ name: m.name, walls: m.walls, spawns: m.spawns, theme: m.theme }))
   });
 
   socket.on("quickPlay", ({ name, skin }) => {
@@ -596,8 +618,8 @@ function applyDamage(code, r, target, dmg, shooterId, direct) {
   if (target.health <= 0) return;
 
   target.lastHit = Date.now();
-  target.health -= dmg;
-  io.to(code).emit("damaged", { id: target.id, health: Math.max(0, target.health) });
+  target.health = Math.max(0, Math.round(target.health - dmg));
+  io.to(code).emit("damaged", { id: target.id, health: target.health });
 
   if (direct && shooterId && shooterId !== target.id) {
     io.to(shooterId).emit("hitConfirm", { x: target.x, y: target.y });
@@ -724,11 +746,18 @@ setInterval(() => {
           const dx = t.x - b.x;
           const dy = t.y - b.y;
           if (dx * dx + dy * dy <= HIT_R * HIT_R) {
-            dead = true;
-            if (b.w !== 2) {
-              applyDamage(code, r, t, WEAPONS[b.w].dmg, b.owner, true);
+          dead = true;
+          if (b.w !== 2) {
+            const wdef = WEAPONS[b.w];
+            let dmg = wdef.dmg;
+            if (wdef.falloff) {
+              const traveled = (b.life0 - b.life) * wdef.speed;
+              const t2 = Math.min(1, Math.max(0, traveled / wdef.range));
+              dmg = wdef.dmg * (1 - wdef.falloff * t2);
             }
-            break;
+            applyDamage(code, r, t, dmg, b.owner, true);
+          }
+          break;
           }
         }
       }
@@ -744,7 +773,7 @@ setInterval(() => {
 
     for (const p of r.players.values()) {
       if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 3000) {
-        p.health = Math.min(100, p.health + 15 * dt);
+        p.health = Math.min(100, Math.round(p.health + 15 * dt));
       }
     }
 

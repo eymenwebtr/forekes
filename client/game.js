@@ -1,9 +1,12 @@
 const STATIC = typeof io === "undefined";
 const socket = STATIC ? { id: "offline", connected: false, on() {}, emit() {} } : io({ transports: ["websocket"] });
 
+const DEFAULT_THEME = { floor: "#1d232d", grid: "#2a323e", wall: "#3d4654", wallBorder: "#5a6578", border: "#79828f" };
+
 const STATIC_MAPS = [
   {
     name: "SİMETRİK",
+    theme: { floor: "#1d232d", grid: "#2a323e", wall: "#3d4654", wallBorder: "#5a6578", border: "#79828f" },
     walls: [
       [900, 60, 400, 70], [900, 1170, 400, 70], [330, 320, 110, 280],
       [1760, 320, 110, 280], [1040, 565, 120, 170], [610, 500, 110, 110],
@@ -17,6 +20,7 @@ const STATIC_MAPS = [
   },
   {
     name: "KAPALI",
+    theme: { floor: "#12222a", grid: "#1c3340", wall: "#1f4a52", wallBorder: "#2f6f7a", border: "#4a94a0" },
     walls: [
       [900, 60, 400, 70], [900, 1170, 400, 70], [330, 320, 110, 280],
       [1760, 320, 110, 280], [1040, 565, 120, 170], [560, 200, 90, 90],
@@ -31,6 +35,7 @@ const STATIC_MAPS = [
   },
   {
     name: "AÇIK",
+    theme: { floor: "#241d14", grid: "#33291b", wall: "#4a3a22", wallBorder: "#6b5532", border: "#9a7f4a" },
     walls: [
       [900, 60, 400, 70], [900, 1170, 400, 70], [1040, 565, 120, 170],
       [330, 420, 110, 460], [1760, 420, 110, 460]
@@ -38,6 +43,35 @@ const STATIC_MAPS = [
     spawns: [
       [100, 100], [2100, 100], [100, 1200], [2100, 1200],
       [1100, 250], [1100, 1050], [100, 780], [2100, 780]
+    ]
+  },
+  {
+    name: "NEON",
+    theme: { floor: "#14121f", grid: "#241f3a", wall: "#3a2a6b", wallBorder: "#7a4ae0", border: "#c06bff" },
+    walls: [
+      [600, 140, 200, 80], [1400, 140, 200, 80],
+      [900, 380, 400, 60],
+      [480, 700, 140, 140], [1580, 700, 140, 140],
+      [900, 700, 200, 120],
+      [300, 900, 240, 70], [1660, 900, 240, 70],
+      [900, 1140, 300, 70]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [1100, 280], [1100, 1000], [380, 600], [1820, 600]
+    ]
+  },
+  {
+    name: "ORMAN",
+    theme: { floor: "#14201a", grid: "#1f3324", wall: "#2a4a2f", wallBorder: "#3f6b45", border: "#5f9a68" },
+    walls: [
+      [380, 180, 90, 90], [1730, 180, 90, 90], [1100, 220, 90, 90],
+      [380, 930, 90, 90], [1730, 930, 90, 90], [1100, 970, 90, 90],
+      [180, 540, 90, 90], [1930, 540, 90, 90], [1050, 500, 200, 200]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [600, 330], [1600, 330], [600, 970], [1600, 970]
     ]
   }
 ];
@@ -60,9 +94,9 @@ const FIRE_MS = 160;
 const RELOAD_MS = 1100;
 const SWAP_MS = 600;
 const WEAPONS = [
-  { id: 0, name: "TABANCA", mag: 8, dmg: 24, pellets: 1, spread: 0, speed: 850, range: 520, fireMs: 160, reloadMs: 1100 },
-  { id: 1, name: "POMPALI", mag: 4, dmg: 14, pellets: 6, spread: 0.2, speed: 700, range: 340, fireMs: 750, reloadMs: 1400 },
-  { id: 2, name: "BAZUKA", mag: 1, dmg: 65, pellets: 1, spread: 0, speed: 520, range: 700, fireMs: 1100, reloadMs: 1800, splash: 130 }
+  { id: 0, name: "TABANCA", mag: 8, dmg: 24, falloff: 0.15, pellets: 1, spread: 0, speed: 850, range: 520, fireMs: 160, reloadMs: 1100 },
+  { id: 1, name: "POMPALI", mag: 4, dmg: 16, falloff: 0.7, pellets: 6, spread: 0.2, speed: 700, range: 340, fireMs: 750, reloadMs: 1400 },
+  { id: 2, name: "BAZUKA", mag: 1, dmg: 65, falloff: 0, pellets: 1, spread: 0, speed: 520, range: 700, fireMs: 1100, reloadMs: 1800, splash: 130 }
 ];
 const DUR_OPTS = [
   { label: "2DK", s: 120 },
@@ -83,6 +117,9 @@ const DIFFS = [
 ];
 const BASE_SPEED = 225;
 const SPRINT_SPEED = 365;
+const DASH_SPEED = 850;
+const DASH_MS = 150;
+const DASH_CD = 1200;
 const BOT_NAMES = [
   "Kartal", "Poyraz", "Zümrüt", "Boran", "Lodos", "Tipi",
   "Atlas", "Rüzgar", "Demir", "Çınar", "Aras", "Toprak",
@@ -146,6 +183,11 @@ let exhausted = false;
 let lastSpPct = -1;
 let lastSyncHp = -1;
 let regenFlash = null;
+let dashUntil = 0;
+let dashCdUntil = 0;
+let dashDir = { x: 0, y: 0 };
+let lastDashTrail = 0;
+let lastDashPct = -1;
 
 let selMap = 0;
 let selDur = 300;
@@ -235,6 +277,10 @@ addEventListener("keydown", e => {
   if (running && (e.code === "Digit1" || e.code === "Digit2" || e.code === "Digit3")) {
     trySwitch(Number(e.code.slice(5)) - 1);
   }
+  if (e.code === "Space" && running && !paused) {
+    e.preventDefault();
+    startDash();
+  }
   if (e.key === "Escape" && running) togglePause();
   if (e.key === "Enter" && running && !paused && !localGame) {
     e.preventDefault();
@@ -262,6 +308,24 @@ function trySwitch(slot) {
   }
   renderAmmo();
   sfx(420, 0.04, "sine", 0.08);
+}
+
+function startDash() {
+  const p = players[me];
+  if (!p || p.health <= 0) return;
+  const now = performance.now();
+  if (now < dashCdUntil) return;
+  dashUntil = now + DASH_MS;
+  dashCdUntil = now + DASH_CD;
+  const dx = (keys.d ? 1 : 0) - (keys.a ? 1 : 0);
+  const dy = (keys.s ? 1 : 0) - (keys.w ? 1 : 0);
+  if (dx || dy) {
+    const len = Math.hypot(dx, dy);
+    dashDir = { x: dx / len, y: dy / len };
+  } else {
+    dashDir = { x: Math.cos(p.angle), y: Math.sin(p.angle) };
+  }
+  sfx(300, 0.08, "sawtooth", 0.1);
 }
 addEventListener("keyup", e => {
   keys[e.key.toLowerCase()] = false;
@@ -835,7 +899,7 @@ function showResults(rankings, reason, mode) {
 // ---------------- HUD ----------------
 function setHp(hp) {
   const fill = $("hpFill");
-  const pct = Math.max(0, Math.min(100, hp));
+  const pct = Math.round(Math.max(0, Math.min(100, hp)));
   const increasing = pct > lastSyncHp && lastSyncHp >= 0;
   lastSyncHp = pct;
   if (fill) {
@@ -890,7 +954,8 @@ function setMap(idx) {
     h: worldDims.h,
     walls: m.walls,
     spawns: m.spawns,
-    name: m.name
+    name: m.name,
+    theme: m.theme || DEFAULT_THEME
   };
   drawMapPreview();
 }
@@ -907,6 +972,8 @@ function drawMapPreview() {
   g.lineWidth = 2;
   g.strokeRect(1, 1, c.width - 2, c.height - 2);
   g.fillStyle = "#3a4048";
+  const th = mapData.theme || DEFAULT_THEME;
+  g.fillStyle = th.wall;
   for (const [x, y, w, h] of mapData.walls) {
     g.fillRect(x * s, y * s, w * s, h * s);
   }
@@ -1084,17 +1151,34 @@ function update(now) {
   }
   updateStaminaBar();
 
-  if ((dx || dy) && p.health > 0) {
-    const len = Math.hypot(dx, dy);
-    const ndx = dx / len;
-    const ndy = dy / len;
-    const speed = sprinting ? SPRINT_SPEED : BASE_SPEED;
+  const dashing = now < dashUntil;
+
+  if (p.health > 0 && (dashing || dx || dy)) {
+    let ndx, ndy, speed;
+    if (dashing) {
+      ndx = dashDir.x;
+      ndy = dashDir.y;
+      speed = DASH_SPEED;
+      if (now - lastDashTrail > 20) {
+        lastDashTrail = now;
+        particles.push({
+          x: p.x - ndx * 26, y: p.y - ndy * 26,
+          vx: -ndx * 70, vy: -ndy * 70,
+          life: 0.3, size: 4.5, color: "#a855f7"
+        });
+      }
+    } else {
+      const len = Math.hypot(dx, dy);
+      ndx = dx / len;
+      ndy = dy / len;
+      speed = sprinting ? SPRINT_SPEED : BASE_SPEED;
+    }
     let nx = Math.max(25, Math.min(mapData.w - 25, p.x + ndx * speed * dt));
     let ny = Math.max(25, Math.min(mapData.h - 25, p.y + ndy * speed * dt));
     const res = resolveWalls(nx, ny, PLAYER_R + 2);
     p.x = res[0];
     p.y = res[1];
-    if (sprinting && now - lastDust > 80) {
+    if (sprinting && !dashing && now - lastDust > 80) {
       lastDust = now;
       particles.push({
         x: p.x - ndx * 24, y: p.y - ndy * 24,
@@ -1103,6 +1187,8 @@ function update(now) {
       });
     }
   }
+
+  updateDashBar(now);
 
   const world = screenToWorld(mouse.x, mouse.y, p);
   p.angle = Math.atan2(world.y - p.y, world.x - p.x);
@@ -1194,6 +1280,14 @@ function updateStaminaBar() {
   const fill = $("spFill");
   fill.style.width = pct + "%";
   fill.classList.toggle("low", exhausted);
+}
+
+function updateDashBar(now) {
+  const pct = Math.round(Math.min(100, Math.max(0, (now - (dashCdUntil - DASH_CD)) / DASH_CD * 100)));
+  if (pct === lastDashPct) return;
+  lastDashPct = pct;
+  const fill = $("dashFill");
+  if (fill) fill.style.width = pct + "%";
 }
 
 function updateFx(dt) {
@@ -1316,10 +1410,11 @@ function draw(now) {
 }
 
 function drawWorld() {
-  ctx.fillStyle = "#1d232d";
+  const th = mapData.theme || DEFAULT_THEME;
+  ctx.fillStyle = th.floor;
   ctx.fillRect(0, 0, mapData.w, mapData.h);
 
-  ctx.strokeStyle = "#2a323e";
+  ctx.strokeStyle = th.grid;
   ctx.lineWidth = 1;
   for (let x = 0; x <= mapData.w; x += 50) {
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, mapData.h); ctx.stroke();
@@ -1329,14 +1424,14 @@ function drawWorld() {
   }
 
   for (const [x, y, w, h] of mapData.walls) {
-    ctx.fillStyle = "#3d4654";
+    ctx.fillStyle = th.wall;
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = "#5a6578";
+    ctx.strokeStyle = th.wallBorder;
     ctx.lineWidth = 4;
     ctx.strokeRect(x, y, w, h);
   }
 
-  ctx.strokeStyle = "#79828f";
+  ctx.strokeStyle = th.border;
   ctx.lineWidth = 7;
   ctx.strokeRect(8, 8, mapData.w - 16, mapData.h - 16);
 }
@@ -1506,6 +1601,8 @@ function drawMinimap() {
   ctx.strokeRect(x, y, w, h);
 
   ctx.fillStyle = "#3a4048";
+  const th = mapData.theme || DEFAULT_THEME;
+  ctx.fillStyle = th.wall;
   for (const [wx, wy, ww, wh] of mapData.walls) {
     ctx.fillRect(x + wx * s, y + wy * s, ww * s, wh * s);
   }
@@ -1988,7 +2085,7 @@ function explodeLocal(bl) {
     if (d <= w.splash + 19) {
       const fall = 1 - Math.min(1, d / w.splash) * 0.6;
       t.lastHit = now;
-      t.health -= w.dmg * fall;
+      t.health = Math.max(0, Math.round(t.health - w.dmg * fall));
       spawnParticles(t.x, t.y, "#f87171", 4, 130);
       if (t.id === me) {
         setHp(Math.max(0, t.health));
@@ -2039,8 +2136,15 @@ function updateLocal(dt, now) {
         if (ddx * ddx + ddy * ddy <= 26 * 26) {
           deadB = true;
           if (bl.w !== 2) {
+            const wdef = WEAPONS[bl.w];
+            let dmg = wdef.dmg;
+            if (wdef.falloff) {
+              const traveled = (bl.life0 - bl.life) * wdef.speed;
+              const t2 = Math.min(1, Math.max(0, traveled / wdef.range));
+              dmg = wdef.dmg * (1 - wdef.falloff * t2);
+            }
             t.lastHit = now;
-            t.health -= WEAPONS[bl.w].dmg;
+            t.health = Math.max(0, Math.round(t.health - dmg));
             spawnParticles(t.x, t.y, "#f87171", 5, 130);
 
             if (t.id === me) {
@@ -2076,7 +2180,7 @@ function updateLocal(dt, now) {
 
   for (const p of Object.values(players)) {
     if (p.health > 0 && p.health < 100 && now - (p.lastHit || 0) > 3000) {
-      p.health = Math.min(100, p.health + 15 * dt);
+      p.health = Math.min(100, Math.round(p.health + 15 * dt));
       if (p.id === me) setHp(p.health);
     }
   }
