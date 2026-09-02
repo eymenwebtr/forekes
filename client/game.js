@@ -838,11 +838,15 @@ function setHp(hp) {
   const pct = Math.max(0, Math.min(100, hp));
   const increasing = pct > lastSyncHp && lastSyncHp >= 0;
   lastSyncHp = pct;
-  fill.style.width = pct + "%";
-  fill.className = pct <= 25 ? "low" : pct <= 50 ? "mid" : "";
-  $("hpText").textContent = pct;
-  $("lowhp").classList.toggle("hidden", !(pct > 0 && pct <= 20));
-  if (increasing) {
+  if (fill) {
+    fill.style.width = pct + "%";
+    fill.className = pct <= 25 ? "low" : pct <= 50 ? "mid" : "";
+  }
+  const hpText = $("hpText");
+  if (hpText) hpText.textContent = pct;
+  const low = $("lowhp");
+  if (low) low.classList.toggle("hidden", !(pct > 0 && pct <= 20));
+  if (increasing && fill) {
     fill.classList.add("regen");
     clearTimeout(regenFlash);
     regenFlash = setTimeout(() => fill.classList.remove("regen"), 400);
