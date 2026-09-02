@@ -103,6 +103,40 @@ const MAPS = [
       [100, 100], [2100, 100], [100, 1200], [2100, 1200],
       [600, 330], [1600, 330], [600, 970], [1600, 970]
     ]
+  },
+  {
+    name: "CEHENNEM",
+    theme: { floor: "#2a1410", grid: "#3a1c14", wall: "#5a1f18", wallBorder: "#b03a28", border: "#e0553a" },
+    walls: [
+      [500, 150, 180, 80], [1520, 150, 180, 80],
+      [900, 120, 400, 60],
+      [300, 400, 140, 140], [1760, 400, 140, 140],
+      [900, 450, 400, 60],
+      [900, 700, 200, 160],
+      [300, 950, 240, 70], [1660, 950, 240, 70],
+      [900, 1130, 400, 60]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [1100, 300], [1100, 1000], [380, 620], [1820, 620]
+    ]
+  },
+  {
+    name: "BUZ",
+    theme: { floor: "#101826", grid: "#16263a", wall: "#1e3a56", wallBorder: "#2e6b96", border: "#5aa0c8" },
+    walls: [
+      [400, 180, 100, 100], [1700, 180, 100, 100],
+      [1100, 220, 100, 100],
+      [400, 950, 100, 100], [1700, 950, 100, 100],
+      [1100, 980, 100, 100],
+      [200, 550, 100, 100], [1900, 550, 100, 100],
+      [900, 500, 400, 60],
+      [900, 740, 400, 60]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [600, 330], [1600, 330], [600, 970], [1600, 970]
+    ]
   }
 ];
 
@@ -634,18 +668,20 @@ function applyDamage(code, r, target, dmg, shooterId, direct) {
     r.scores[shooterId] = (r.scores[shooterId] || 0) + 1;
   }
 
-  const vs = statOf(target.name);
-  vs.deaths++;
-  vs.cups = Math.max(0, vs.cups - 1);
-  io.to(target.id).emit("cupsYou", { cups: vs.cups, kills: vs.kills, deaths: vs.deaths });
+  if (!r.isParty) {
+    const vs = statOf(target.name);
+    vs.deaths++;
+    vs.cups = Math.max(0, vs.cups - 1);
+    io.to(target.id).emit("cupsYou", { cups: vs.cups, kills: vs.kills, deaths: vs.deaths });
 
-  if (shooter && !selfKill) {
-    const ks = statOf(shooter.name);
-    ks.kills++;
-    ks.cups++;
-    io.to(shooter.id).emit("cupsYou", { cups: ks.cups, kills: ks.kills, deaths: ks.deaths });
+    if (shooter && !selfKill) {
+      const ks = statOf(shooter.name);
+      ks.kills++;
+      ks.cups++;
+      io.to(shooter.id).emit("cupsYou", { cups: ks.cups, kills: ks.kills, deaths: ks.deaths });
+    }
+    persist();
   }
-  persist();
 
   io.to(code).emit("kill", { killer: shooter ? shooter.name : "??", victim: target.name });
   io.to(code).emit("dead", { id: target.id, killer: shooter ? shooter.name : "??" });

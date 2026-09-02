@@ -73,6 +73,40 @@ const STATIC_MAPS = [
       [100, 100], [2100, 100], [100, 1200], [2100, 1200],
       [600, 330], [1600, 330], [600, 970], [1600, 970]
     ]
+  },
+  {
+    name: "CEHENNEM",
+    theme: { floor: "#2a1410", grid: "#3a1c14", wall: "#5a1f18", wallBorder: "#b03a28", border: "#e0553a" },
+    walls: [
+      [500, 150, 180, 80], [1520, 150, 180, 80],
+      [900, 120, 400, 60],
+      [300, 400, 140, 140], [1760, 400, 140, 140],
+      [900, 450, 400, 60],
+      [900, 700, 200, 160],
+      [300, 950, 240, 70], [1660, 950, 240, 70],
+      [900, 1130, 400, 60]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [1100, 300], [1100, 1000], [380, 620], [1820, 620]
+    ]
+  },
+  {
+    name: "BUZ",
+    theme: { floor: "#101826", grid: "#16263a", wall: "#1e3a56", wallBorder: "#2e6b96", border: "#5aa0c8" },
+    walls: [
+      [400, 180, 100, 100], [1700, 180, 100, 100],
+      [1100, 220, 100, 100],
+      [400, 950, 100, 100], [1700, 950, 100, 100],
+      [1100, 980, 100, 100],
+      [200, 550, 100, 100], [1900, 550, 100, 100],
+      [900, 500, 400, 60],
+      [900, 740, 400, 60]
+    ],
+    spawns: [
+      [100, 100], [2100, 100], [100, 1200], [2100, 1200],
+      [600, 330], [1600, 330], [600, 970], [1600, 970]
+    ]
   }
 ];
 
@@ -117,9 +151,9 @@ const DIFFS = [
 ];
 const BASE_SPEED = 225;
 const SPRINT_SPEED = 365;
-const DASH_SPEED = 850;
-const DASH_MS = 150;
-const DASH_CD = 1200;
+const DASH_SPEED = 950;
+const DASH_MS = 180;
+const DASH_CD = 3000;
 const BOT_NAMES = [
   "Kartal", "Poyraz", "Zümrüt", "Boran", "Lodos", "Tipi",
   "Atlas", "Rüzgar", "Demir", "Çınar", "Aras", "Toprak",
@@ -277,7 +311,7 @@ addEventListener("keydown", e => {
   if (running && (e.code === "Digit1" || e.code === "Digit2" || e.code === "Digit3")) {
     trySwitch(Number(e.code.slice(5)) - 1);
   }
-  if (e.code === "Space" && running && !paused) {
+  if (e.code === "KeyQ" && running && !paused) {
     e.preventDefault();
     startDash();
   }
