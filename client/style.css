@@ -90,7 +90,7 @@ input::placeholder { color: var(--faint); }
 .btn-primary:hover { background: #fdd635; border-color: #fdd635; }
 .btn-ghost { background: transparent; }
 .btn-ghost:hover { background: var(--panel-3); }
-.btn-big { width: 100%; height: 54px; font-size: 15px; }
+.btn-big { width: 100%; height: 46px; font-size: 14px; }
 .btn-small { height: 32px; padding: 0 12px; font-size: 12px; }
 
 .chip {
@@ -136,7 +136,7 @@ input::placeholder { color: var(--faint); }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 4px 6px 20px;
+  padding: 4px 6px 14px;
 }
 .logo {
   font-size: 30px;
@@ -191,16 +191,16 @@ input::placeholder { color: var(--faint); }
   flex: 1;
   min-width: 0;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 28px 32px;
+  padding: 22px 26px;
 }
-.panel h2 { margin: 0 0 6px; font-size: 21px; letter-spacing: 0.5px; }
+.panel h2 { margin: 0 0 6px; font-size: 19px; letter-spacing: 0.5px; }
 .panel h3 {
-  margin: 20px 0 10px;
-  font-size: 12px;
+  margin: 14px 0 8px;
+  font-size: 11px;
   color: var(--faint);
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -210,11 +210,11 @@ input::placeholder { color: var(--faint); }
 .tab.active { display: block; }
 
 /* --- Oyna sekmesi --- */
-.play-grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 34px; }
-.play-left .btn-big { margin-bottom: 12px; }
-.play-left h2 { margin-bottom: 8px; }
-.play-left .muted { margin-bottom: 20px; }
-.join { display: flex; gap: 8px; margin-top: 16px; }
+.play-grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 30px; }
+.play-left .btn-big { margin-bottom: 8px; }
+.play-left h2 { margin-bottom: 6px; }
+.play-left .muted { margin-bottom: 14px; }
+.join { display: flex; gap: 8px; margin-top: 12px; }
 .join input {
   flex: 1;
   text-transform: uppercase;
@@ -233,15 +233,15 @@ input::placeholder { color: var(--faint); }
   background: #101216;
   display: block;
 }
-.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .controls div {
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 11px 14px;
+  padding: 8px 12px;
 }
 .controls b { display: block; font-size: 13px; }
-.controls span { display: block; color: var(--faint); font-size: 11px; margin-top: 3px; }
+.controls span { display: block; color: var(--faint); font-size: 11px; margin-top: 2px; }
 
 /* --- Skinler --- */
 .skin-grid {
@@ -585,26 +585,26 @@ input::placeholder { color: var(--faint); }
 
 /* ============ MAC AYARLARI ============ */
 .match-settings {
-  margin-top: 20px;
-  padding: 16px;
+  margin-top: 12px;
+  padding: 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--panel-2);
 }
-.opt-group { margin-bottom: 14px; }
-.opt-group:last-of-type { margin-bottom: 10px; }
+.opt-group { margin-bottom: 9px; }
+.opt-group:last-of-type { margin-bottom: 8px; }
 .opt-label {
   display: block;
   font-size: 10px;
   color: var(--faint);
   letter-spacing: 2px;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
-.opt-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.opt-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .opt-btn {
-  flex: 1 1 70px;
-  height: 36px;
+  flex: 1 1 68px;
+  height: 32px;
   padding: 0 8px;
   border-radius: 8px;
   border: 1px solid var(--border);
