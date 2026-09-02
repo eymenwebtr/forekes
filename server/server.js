@@ -152,6 +152,7 @@ const MAX_PLAYERS = 10;
 const HIT_R = 26;
 const SHIELD_MS = 1400;
 const RESPAWN_MS = 900;
+const MAX_MOVE_SPEED = 1000; // px/s — dash 950 + tolerans
 
 const DURS = [0, 120, 300, 480];
 const LIMITS = [0, 10, 20, 30];
@@ -528,6 +529,21 @@ io.on("connection", socket => {
     x = Number(x);
     y = Number(y);
     if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+
+    // anti-cheat: isinlanma / hiz hack engeli
+    const now = Date.now();
+    const elapsed = (now - (p.lastMoveAt || now)) / 1000;
+    const dt = Math.min(0.25, Math.max(0.016, elapsed));
+    const dx = x - p.x;
+    const dy = y - p.y;
+    const dist = Math.hypot(dx, dy);
+    const maxDist = MAX_MOVE_SPEED * dt + 25;
+    if (dist > maxDist) {
+      const k = maxDist / dist;
+      x = p.x + dx * k;
+      y = p.y + dy * k;
+    }
+    p.lastMoveAt = now;
 
     const res = resolveWalls(x, y, 21, MAPS[r.map].walls);
     p.x = res[0];
