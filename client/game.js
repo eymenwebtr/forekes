@@ -227,6 +227,7 @@ let fpsFrames = 0;
 let fpsLast = 0;
 let matchCups = 0;
 let perfMode = false;
+let sensitivity = 1;
 
 let selMap = 0;
 let selDur = 300;
@@ -1132,8 +1133,8 @@ function pointInWall(x, y, pad) {
 function screenToWorld(sx, sy, p) {
   const scale = camScale();
   return {
-    x: p.x + (sx - innerWidth / 2) / scale,
-    y: p.y + (sy - innerHeight / 2) / scale
+    x: p.x + (sx - innerWidth / 2) / scale * sensitivity,
+    y: p.y + (sy - innerHeight / 2) / scale * sensitivity
   };
 }
 
@@ -2351,6 +2352,43 @@ $("perfToggle").onclick = () => {
   updatePerfToggle();
 };
 updatePerfToggle();
+
+sensitivity = loadLS("sens", 1);
+$("sensSlider").value = Math.round(sensitivity * 100);
+$("sensVal").textContent = sensitivity.toFixed(1);
+$("sensSlider").addEventListener("input", e => {
+  sensitivity = e.target.value / 100;
+  $("sensVal").textContent = sensitivity.toFixed(1);
+  saveLS("sens", sensitivity);
+});
+
+$("gearBtn").onclick = () => {
+  if (running) togglePause();
+};
+
+function saveSettings() {
+  saveLS("vol", sfxVol);
+  saveLS("sens", sensitivity);
+  saveLS("perf", perfMode);
+  saveLS("diff", diffIdx);
+  toast("Ayarlar kaydedildi.");
+}
+function resetSettings() {
+  sfxVol = 0.8;
+  sensitivity = 1;
+  perfMode = false;
+  saveLS("vol", sfxVol);
+  saveLS("sens", sensitivity);
+  saveLS("perf", perfMode);
+  $("volSlider").value = 80;
+  $("volVal").textContent = "%80";
+  $("sensSlider").value = 100;
+  $("sensVal").textContent = "1.0";
+  updatePerfToggle();
+  toast("Ayarlar sıfırlandı.");
+}
+$("saveBtn").onclick = saveSettings;
+$("resetBtn").onclick = resetSettings;
 
 $("volSlider").value = Math.round(sfxVol * 100);
 $("volVal").textContent = "%" + Math.round(sfxVol * 100);

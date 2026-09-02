@@ -203,12 +203,19 @@ input::placeholder { color: var(--faint); }
   flex: 1;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 22px 26px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2e37 transparent;
 }
+.panel::-webkit-scrollbar { width: 8px; }
+.panel::-webkit-scrollbar-track { background: transparent; }
+.panel::-webkit-scrollbar-thumb { background: #2a2e37; border-radius: 4px; }
+.panel::-webkit-scrollbar-thumb:hover { background: #3a3f4b; }
 .panel h2 { margin: 0 0 6px; font-size: 19px; letter-spacing: 0.5px; }
 .panel h3 {
   margin: 14px 0 8px;
@@ -417,6 +424,21 @@ input::placeholder { color: var(--faint); }
 .chip-dim b { color: var(--faint); }
 .chip-room { pointer-events: auto; cursor: pointer; }
 .chip-room:hover { border-color: var(--accent); }
+.hud-gear {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(13, 14, 17, 0.88);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.hud-gear:hover { color: var(--text); border-color: var(--border-2); }
+.hud-gear .ic { width: 18px; height: 18px; }
 
 .hud-center {
   position: absolute;
@@ -857,6 +879,8 @@ input::placeholder { color: var(--faint); }
   border-color: var(--accent);
   color: var(--accent-ink);
 }
+.settings-actions { display: flex; gap: 8px; margin-top: 2px; }
+.settings-actions .btn { flex: 1; height: 40px; font-size: 12px; }
 
 /* ============ DURAKLATMA MENUSU ============ */
 .overlay-pause {
