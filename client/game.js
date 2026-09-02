@@ -226,7 +226,7 @@ let fps = 0;
 let fpsFrames = 0;
 let fpsLast = 0;
 let matchCups = 0;
-let perfMode = false;
+let quality = 1;
 let sensitivity = 1;
 
 let selMap = 0;
@@ -1145,7 +1145,7 @@ function camScale() {
 }
 
 function spawnParticles(x, y, color, count, speed) {
-  if (perfMode) count = Math.max(2, Math.ceil(count * 0.4));
+  count = Math.max(2, Math.round(count * [0.35, 0.7, 1.2][quality]));
   for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
     const v = speed * (0.4 + Math.random() * 0.8);
@@ -1426,7 +1426,7 @@ function draw(now) {
   ctx.clearRect(0, 0, innerWidth, innerHeight);
 
   const scale = camScale();
-  const sh = perfMode ? 0 : shake;
+  const sh = shake * [0, 0.5, 1][quality];
   const ox = innerWidth / 2 - p.x * scale + (Math.random() - 0.5) * sh;
   const oy = innerHeight / 2 - p.y * scale + (Math.random() - 0.5) * sh;
 
@@ -2340,20 +2340,20 @@ $("quitBtn").onclick = () => requestLeave();
 $("leaveYes").onclick = () => leaveMatch();
 $("leaveNo").onclick = () => $("leaveWarn").classList.add("hidden");
 
-perfMode = !!loadLS("perf", false);
-function updatePerfToggle() {
-  const btn = $("perfToggle");
-  if (btn) {
-    btn.textContent = perfMode ? "AÇIK" : "KAPALI";
-    btn.classList.toggle("on", perfMode);
-  }
+quality = Math.min(2, Math.max(0, loadLS("quality", 1)));
+function updateQualityButtons() {
+  document.querySelectorAll(".q-btn").forEach(btn => {
+    btn.classList.toggle("active", Number(btn.dataset.q) === quality);
+  });
 }
-$("perfToggle").onclick = () => {
-  perfMode = !perfMode;
-  saveLS("perf", perfMode);
-  updatePerfToggle();
-};
-updatePerfToggle();
+document.querySelectorAll(".q-btn").forEach(btn => {
+  btn.onclick = () => {
+    quality = Number(btn.dataset.q);
+    saveLS("quality", quality);
+    updateQualityButtons();
+  };
+});
+updateQualityButtons();
 
 sensitivity = loadLS("sens", 1);
 $("sensSlider").value = Math.round(sensitivity * 100);
@@ -2371,26 +2371,35 @@ $("gearBtn").onclick = () => {
 function saveSettings() {
   saveLS("vol", sfxVol);
   saveLS("sens", sensitivity);
-  saveLS("perf", perfMode);
+  saveLS("quality", quality);
   saveLS("diff", diffIdx);
   toast("Ayarlar kaydedildi.");
 }
 function resetSettings() {
   sfxVol = 0.8;
   sensitivity = 1;
-  perfMode = false;
+  quality = 1;
   saveLS("vol", sfxVol);
   saveLS("sens", sensitivity);
-  saveLS("perf", perfMode);
+  saveLS("quality", quality);
   $("volSlider").value = 80;
   $("volVal").textContent = "%80";
   $("sensSlider").value = 100;
   $("sensVal").textContent = "1.0";
-  updatePerfToggle();
+  updateQualityButtons();
   toast("Ayarlar sıfırlandı.");
 }
 $("saveBtn").onclick = saveSettings;
 $("resetBtn").onclick = resetSettings;
+
+function showInfo(title, text) {
+  $("infoTitle").textContent = title;
+  $("infoText").textContent = text;
+  $("infoModal").classList.remove("hidden");
+}
+$("infoClose").onclick = () => $("infoModal").classList.add("hidden");
+$("lnkPrivacy").onclick = () => showInfo("Gizlilik", "Forekes yalnızca oyunu çalıştırmak için gereken verileri (takma ad ve oyun istatistikleri) işler. Verilerin üçüncü taraflarla paylaşılmaz.");
+$("lnkCopyright").onclick = () => showInfo("Telif Hakkı", "© 2026 Forekes. Tüm hakları saklıdır. Kod ve içerik izinsiz kopyalanamaz.");
 
 $("volSlider").value = Math.round(sfxVol * 100);
 $("volVal").textContent = "%" + Math.round(sfxVol * 100);

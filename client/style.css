@@ -255,7 +255,7 @@ input::placeholder { color: var(--faint); }
   background: #101216;
   display: block;
 }
-.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 .controls div {
   background: var(--panel-2);
   border: 1px solid var(--border);
@@ -943,6 +943,8 @@ input::placeholder { color: var(--faint); }
   background: var(--panel-3);
 }
 #diffBox { margin-bottom: 20px; }
+#gfxBox { margin-bottom: 16px; }
+#gfxBox .pause-h { margin: 0 0 10px; }
 #diffBox .hint { margin: 8px 0 0; }
 .pause-card .btn-big { margin-bottom: 9px; }
 .pause-card .btn-big:last-child { margin-bottom: 0; }

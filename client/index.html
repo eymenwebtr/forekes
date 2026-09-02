@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Forekes</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161b'/%3E%3Crect x='19' y='19' width='8' height='8' rx='2' fill='%23facc15'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=24">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -131,7 +131,7 @@
       </div>
       <footer class="lobby-foot">
         <span>© 2026 Forekes</span>
-        <span class="foot-links"><span>Gizlilik</span><span>Telif Hakkı</span></span>
+        <span class="foot-links"><span id="lnkPrivacy">Gizlilik</span><span id="lnkCopyright">Telif Hakkı</span></span>
       </footer>
     </div>
   </div>
@@ -248,9 +248,13 @@
         <b id="sensVal">1.0</b>
       </div>
 
-      <div class="toggle-row">
-        <span class="pause-h">PERFORMANS MODU</span>
-        <button id="perfToggle" class="toggle-btn"></button>
+      <div id="gfxBox">
+        <h3 class="pause-h">GRAFİK KALİTESİ</h3>
+        <div class="diff-row">
+          <button class="diff-btn q-btn" data-q="2">MAKS KALİTE</button>
+          <button class="diff-btn q-btn" data-q="1">DENGELİ</button>
+          <button class="diff-btn q-btn" data-q="0">PERFORMANS</button>
+        </div>
       </div>
 
       <div class="settings-actions">
@@ -308,9 +312,18 @@
     </div>
   </div>
 
+  <!-- ============ BILGI MODALI ============ -->
+  <div id="infoModal" class="overlay overlay-pause hidden">
+    <div class="pause-card">
+      <h2 id="infoTitle">BİLGİ</h2>
+      <p id="infoText" class="muted"></p>
+      <button id="infoClose" class="btn btn-primary btn-big">TAMAM</button>
+    </div>
+  </div>
+
   <div id="toast" class="hidden"></div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="game.js?v=19"></script>
+  <script src="game.js?v=20"></script>
 </body>
 </html>
