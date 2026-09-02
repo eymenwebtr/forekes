@@ -160,6 +160,38 @@ const LIMITS = [0, 10, 20, 30];
 const rooms = new Map();
 const presence = new Map();
 
+// ---------------- yasaklama (ban) ----------------
+const BANS_FILE = path.join(__dirname, "bans.json");
+const banIps = new Map();
+const banNames = new Map();
+try {
+  const arr = JSON.parse(fs.readFileSync(BANS_FILE, "utf8"));
+  arr.forEach(b => {
+    if (b.ip) banIps.set(b.ip, b);
+    if (b.name) banNames.set(String(b.name).toLowerCase(), b);
+  });
+} catch (e) {}
+
+function persistBans() {
+  try { fs.writeFileSync(BANS_FILE, JSON.stringify([...banIps.values()])); } catch (e) {}
+}
+
+function clientIp(socket) {
+  const xff = socket.handshake.headers["x-forwarded-for"];
+  if (xff) return String(xff).split(",")[0].trim();
+  return socket.handshake.address || "0.0.0.0";
+}
+
+function banPlayer(socket, p, reason) {
+  const ip = clientIp(socket);
+  const entry = { ip, name: p ? p.name : "?", reason, at: Date.now() };
+  banIps.set(ip, entry);
+  if (p && p.name) banNames.set(String(p.name).toLowerCase(), entry);
+  persistBans();
+  try { socket.emit("banned", { reason }); } catch (e) {}
+  setTimeout(() => { try { socket.disconnect(true); } catch (e) {} }, 300);
+}
+
 // ---------------- kupa istatistikleri (kalici) ----------------
 const DATA_FILE = path.join(__dirname, "data.json");
 const stats = new Map();
@@ -421,6 +453,12 @@ function leaveRoom(socket) {
 
 // ---------------- socket ----------------
 io.on("connection", socket => {
+  if (banIps.has(clientIp(socket))) {
+    socket.emit("banned", { reason: banIps.get(clientIp(socket)).reason });
+    setTimeout(() => socket.disconnect(true), 300);
+    return;
+  }
+
   socket.emit("maps", {
     world: WORLD,
     maps: MAPS.map(m => ({ name: m.name, walls: m.walls, spawns: m.spawns, theme: m.theme }))
@@ -429,6 +467,10 @@ io.on("connection", socket => {
   socket.on("quickPlay", ({ name, skin }) => {
     if (socket.data.room) leaveRoom(socket);
     name = String(name || "Oyuncu").slice(0, 16);
+    if (banNames.has(name.toLowerCase())) {
+      socket.emit("banned", { reason: banNames.get(name.toLowerCase()).reason });
+      return;
+    }
     skin = Number(skin) || 0;
 
     for (const [code, r] of rooms) {
@@ -455,6 +497,10 @@ io.on("connection", socket => {
   socket.on("createParty", ({ name, skin, map, durationSec, killLimit }) => {
     if (socket.data.room) leaveRoom(socket);
     name = String(name || "Oyuncu").slice(0, 16);
+    if (banNames.has(name.toLowerCase())) {
+      socket.emit("banned", { reason: banNames.get(name.toLowerCase()).reason });
+      return;
+    }
     skin = Number(skin) || 0;
     map = Number.isInteger(map) && map >= 0 && map < MAPS.length ? map : 0;
     durationSec = DURS.includes(durationSec) ? durationSec : 300;
@@ -477,6 +523,10 @@ io.on("connection", socket => {
   socket.on("join", ({ room, name, skin }) => {
     room = String(room || "").toUpperCase();
     name = String(name || "Oyuncu").slice(0, 16);
+    if (banNames.has(name.toLowerCase())) {
+      socket.emit("banned", { reason: banNames.get(name.toLowerCase()).reason });
+      return;
+    }
     skin = Number(skin) || 0;
 
     if (!rooms.has(room)) {
@@ -542,6 +592,17 @@ io.on("connection", socket => {
       const k = maxDist / dist;
       x = p.x + dx * k;
       y = p.y + dy * k;
+
+      // acik hile: belirgin isinlanma -> ihlal say
+      if (dist > maxDist + 150) {
+        p.violations = p.violations || [];
+        p.violations = p.violations.filter(t => now - t < 30000);
+        p.violations.push(now);
+        if (p.violations.length >= 8) {
+          banPlayer(socket, p, "Hız hack tespit edildi");
+          return;
+        }
+      }
     }
     p.lastMoveAt = now;
 

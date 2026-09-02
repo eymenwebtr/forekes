@@ -187,6 +187,7 @@ let mapData = null;
 let mapsCatalog = null;
 let worldDims = { w: 2200, h: 1300 };
 let worldCanvas = null;
+let minimapCanvas = null;
 let players = {};
 let bullets = [];
 let particles = [];
@@ -856,6 +857,13 @@ if (!STATIC) {
   socket.on("connect_error", () => {
     if (screen === "lobby") toast("Sunucuya bağlanılamadı. Birazdan tekrar deneniyor...");
   });
+  socket.on("banned", data => {
+    backToLobby();
+    clearTimeout(toastTimer);
+    const t = $("toast");
+    t.textContent = "Yasaklandınız: " + (data.reason || "kural ihlali");
+    t.classList.remove("hidden");
+  });
 }
 
 // ---------------- sohbet ----------------
@@ -1018,6 +1026,7 @@ function setMap(idx) {
     theme: m.theme || DEFAULT_THEME
   };
   cacheWorld();
+  cacheMinimap();
   drawMapPreview();
 }
 
@@ -1697,24 +1706,46 @@ function drawParticles() {
   ctx.globalAlpha = 1;
 }
 
+function cacheMinimap() {
+  const w = 176;
+  const h = Math.round(w * mapData.h / mapData.w);
+  minimapCanvas = document.createElement("canvas");
+  minimapCanvas.width = w;
+  minimapCanvas.height = h;
+  const g = minimapCanvas.getContext("2d");
+  const s = w / mapData.w;
+  const th = mapData.theme || DEFAULT_THEME;
+  g.fillStyle = "rgba(13,14,17,0.85)";
+  g.fillRect(0, 0, w, h);
+  g.strokeStyle = "#2a2e37";
+  g.lineWidth = 1.5;
+  g.strokeRect(0, 0, w, h);
+  g.fillStyle = th.wall;
+  for (const [wx, wy, ww, wh] of mapData.walls) {
+    g.fillRect(wx * s, wy * s, ww * s, wh * s);
+  }
+}
+
 function drawMinimap() {
   const w = 176;
-  const h = w * mapData.h / mapData.w;
+  const h = Math.round(w * mapData.h / mapData.w);
   const x = innerWidth - w - 16;
   const y = innerHeight - h - 16;
   const s = w / mapData.w;
 
-  ctx.fillStyle = "rgba(13,14,17,0.85)";
-  ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = "#2a2e37";
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(x, y, w, h);
-
-  ctx.fillStyle = "#3a4048";
-  const th = mapData.theme || DEFAULT_THEME;
-  ctx.fillStyle = th.wall;
-  for (const [wx, wy, ww, wh] of mapData.walls) {
-    ctx.fillRect(x + wx * s, y + wy * s, ww * s, wh * s);
+  if (minimapCanvas) {
+    ctx.drawImage(minimapCanvas, x, y);
+  } else {
+    const th = mapData.theme || DEFAULT_THEME;
+    ctx.fillStyle = "rgba(13,14,17,0.85)";
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = "#2a2e37";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = th.wall;
+    for (const [wx, wy, ww, wh] of mapData.walls) {
+      ctx.fillRect(x + wx * s, y + wy * s, ww * s, wh * s);
+    }
   }
 
   for (const p of Object.values(players)) {
