@@ -915,16 +915,18 @@ $("chatInput").addEventListener("input", e => {
 // ---------------- mac sonucu ----------------
 function showResults(rankings, reason, mode) {
   $("resultsSub").textContent = reason === "time" ? "Süre doldu." : "Skor hedefine ulaşıldı.";
-  const list = $("resultsList");
-  list.innerHTML = "";
+  const body = $("resultsBody");
+  body.innerHTML = "";
   rankings.forEach((row, i) => {
-    const li = document.createElement("li");
-    li.innerHTML =
-      '<span class="rank">' + (i + 1) + "</span>" +
-      '<span class="bname"></span>' +
-      '<span class="bkills">' + row.kills + " kill</span>";
-    li.querySelector(".bname").textContent = row.name;
-    list.appendChild(li);
+    const tr = document.createElement("tr");
+    if (row.id === me) tr.className = "me";
+    tr.innerHTML =
+      "<td>" + (i + 1) + "</td>" +
+      '<td><span class="pname"></span>' + (row.id === me ? ' <span class="you">(YOU)</span>' : "") + "</td>" +
+      "<td>" + (row.kills || 0) + "</td>" +
+      "<td>" + (row.deaths || 0) + "</td>";
+    tr.querySelector(".pname").textContent = row.name;
+    body.appendChild(tr);
   });
 
   $("resultsAgain").style.display = (mode === "sp" || (mode === "mp" && !isParty)) ? "" : "none";
@@ -1862,7 +1864,7 @@ function endLocal(reason) {
   matchEnded = true;
   running = false;
   const rankings = Object.values(players)
-    .map(p => ({ name: p.name, kills: p.kills || 0 }))
+    .map(p => ({ id: p.id, name: p.name, kills: p.kills || 0, deaths: p.deaths || 0 }))
     .sort((a, b) => b.kills - a.kills);
   $("hud").classList.add("hidden");
   document.body.classList.remove("ingame");

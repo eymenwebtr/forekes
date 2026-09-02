@@ -763,7 +763,7 @@ function endMatch(code, r, reason) {
   }
 
   const rankings = [...r.players.values()]
-    .map(p => ({ id: p.id, name: p.name, kills: r.scores[p.id] || 0 }))
+    .map(p => ({ id: p.id, name: p.name, kills: r.scores[p.id] || 0, deaths: r.deaths[p.id] || 0 }))
     .sort((a, b) => b.kills - a.kills);
 
   r.scores = {};

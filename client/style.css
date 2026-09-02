@@ -768,8 +768,24 @@ input::placeholder { color: var(--faint); }
 }
 
 /* ============ MAC SONUCU ============ */
-#results .board { max-height: 260px; overflow-y: auto; }
-#results .board li { background: var(--panel-2); }
+#results table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+#results th {
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 2px;
+  font-weight: 800;
+  padding: 0 8px 8px;
+}
+#results td {
+  font-size: 14px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+#results td:nth-child(1) { color: var(--faint); font-weight: 900; width: 30px; }
+#results td:nth-child(2) { text-align: left; font-weight: 600; }
+#results td:nth-child(3), #results td:nth-child(4) { width: 60px; }
+#results tr.me td { color: var(--accent); }
+#results .you { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
 #vignette {
   position: fixed;
   inset: 0;
